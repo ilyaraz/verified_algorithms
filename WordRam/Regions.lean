@@ -91,4 +91,63 @@ theorem ArrayAt.update_outside (h : ArrayAt mem base xs)
   · intro he
     exact ha (he ▸ Region.contains_index hf i.isLt)
 
+theorem word_eq_iff_of_lt {a b : Nat} (ha : a < modulus w) (hb : b < modulus w) :
+    word w a = word w b ↔ a = b := by
+  constructor
+  · intro h
+    have := congrArg BitVec.toNat h
+    simpa [word_toNat_of_lt ha, word_toNat_of_lt hb] using this
+  · rintro rfl
+    rfl
+
+theorem arrayAt_append (mem : DataMemory w) (base : Nat) (xs ys : List (Word w)) :
+    ArrayAt mem base (xs++ys) ↔ ArrayAt mem base xs ∧ ArrayAt mem (base+xs.length) ys := by
+  induction xs generalizing base with
+  | nil => simp
+  | cons x xs ih =>
+    simp only [List.cons_append, arrayAt_cons, ih, List.length_cons, and_assoc]
+    have he : base + 1 + xs.length = base + (xs.length+1) := by omega
+    rw [he]
+
+theorem AgreeOn.update_outside (h : AgreeOn r mem mem') (ha : ¬ r.Contains a) :
+    AgreeOn r mem (update mem' a v) := by
+  intro b hb
+  rw [update_other]
+  · exact h b hb
+  · intro he
+    exact ha (he ▸ hb)
+
+theorem ArrayAt.push (h : ArrayAt mem base xs) (hf : base+xs.length+1 < modulus w) :
+    ArrayAt (update mem (word w (base+xs.length)) v) base (xs++[v]) := by
+  rw [arrayAt_append]
+  constructor
+  · apply h.update_outside (by unfold Region.Fits; simp only; omega)
+    unfold Region.Contains
+    rw [word_toNat_of_lt (by omega : base+xs.length < modulus w)]
+    simp
+  · rw [arrayAt_cons]
+    exact ⟨update_same _ _ _, by simp⟩
+
+theorem update_word (mem : DataMemory w) (v : Word w) (a : Addr w)
+    (hf : n < modulus w) :
+    update mem (word w n) v a = if a.toNat = n then v else mem a := by
+  have he : a = word w n ↔ a.toNat = n := by
+    constructor
+    · rintro rfl
+      exact word_toNat_of_lt hf
+    · intro h
+      apply BitVec.eq_of_toNat_eq
+      rw [h, word_toNat_of_lt hf]
+  simp only [update, he]
+
+theorem word_add (a b : Nat) : word w a + word w b = word w (a+b) :=
+  BitVec.ofNat_add_ofNat a b
+
+theorem word_mul (a b : Nat) : word w a * word w b = word w (a*b) :=
+  BitVec.ofNat_mul_ofNat a b
+
+theorem word_sub (a b : Nat) (hb : b < modulus w) (hba : b ≤ a) :
+    word w a - word w b = word w (a-b) :=
+  BitVec.ofNat_sub_ofNat_of_le a b hb hba
+
 end WordRam

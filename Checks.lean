@@ -6,6 +6,8 @@ import Hashing
 import Hashing.Examples
 import Probability
 import Probability.Examples
+import Algorithms
+import Algorithms.Dedup.Examples
 import Lean
 
 open WordRam
@@ -66,7 +68,7 @@ run_cmd do
   let allowed := [``propext, ``Classical.choice, ``Quot.sound]
   let mut checked := 0
   for (name, _) in env.constants.toList do
-    if [`WordRam, `StaticSet, `PerfectHash, `Hashing, `FiniteProbability].contains name.getRoot then
+    if [`WordRam, `StaticSet, `PerfectHash, `Hashing, `FiniteProbability, `Dedup].contains name.getRoot then
       for ax in ← Lean.collectAxioms name do
         unless allowed.contains ax do
           throwError "Unexpected axiom in {name}: {ax}"
@@ -93,6 +95,9 @@ run_cmd do
       ``FiniteProbability.FiniteSearch.search, ``FiniteProbability.FiniteSearch.enumerationAttempts,
       ``FiniteProbability.FiniteSearch.searchWork, ``FiniteProbability.FiniteSearch.work,
       ``FiniteProbability.Examples.predicateSearch,
+      ``Dedup.workspaceCapacity, ``Dedup.assembly, ``Dedup.location, ``Dedup.program, ``Dedup.fuel,
+      ``Dedup.Examples.layout, ``Dedup.Examples.memory, ``Dedup.Examples.registers,
+      ``Dedup.Examples.execute, ``Dedup.Examples.values,
       ``StaticSet.registerCount, ``StaticSet.readDescriptor,
       ``PerfectHash.dictionaryCapacity, ``PerfectHash.workspaceCapacity,
       ``PerfectHash.bucketCapacity, ``PerfectHash.randomCapacity,

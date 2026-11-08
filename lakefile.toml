@@ -1,6 +1,6 @@
 name = "verifiable_algorithms"
 version = "0.1.0"
-defaultTargets = ["WordRam", "Hashing", "Probability", "DataStructures", "Checks"]
+defaultTargets = ["WordRam", "Hashing", "Probability", "Algorithms", "DataStructures", "Checks"]
 
 [[require]]
 name = "mathlib"
@@ -21,3 +21,6 @@ name = "Hashing"
 
 [[lean_lib]]
 name = "Probability"
+
+[[lean_lib]]
+name = "Algorithms"

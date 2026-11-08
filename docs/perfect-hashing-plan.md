@@ -370,6 +370,13 @@ Prove finite expectation/Markov/union-bound wrappers as needed, capped retry tai
 
 ### M4 — Verify deduplication as an independent algorithm
 
+**Implemented:** `Algorithms/Dedup` supplies a fixed 57-instruction, 64-register
+chaining program. It terminates for every random image, computes a compact distinct
+array, preserves the input, uses `6*(N+1)` scratch words and exactly one random read,
+and executes at most `67*(N+1)` instructions in expectation. The concrete proof
+includes clearing dirty memory and all duplicate searches. See the
+[deduplication reference](deduplication.md).
+
 **Dependencies:** M1–M2; expectation and random-law transfer from M3. **Main risk:** an uncharged or quadratic normalization pass hidden in a linear claim.
 
 Specify the input/compact-output relation. Prove totality, distinctness, membership equivalence, original-input preservation, and workspace bounds for chaining. Prove the prefix-set comparison bound from Section 4, then transfer it to expected executed instructions. Supply a quadratic baseline only if it meaningfully accelerates an earlier complete correctness result.

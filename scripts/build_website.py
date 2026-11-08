@@ -18,10 +18,12 @@ CACHE = ROOT / ".lake/website"
 WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Arrays", "Random", "RandomBlocks", "Examples"]
 HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
                    "MultiplyShiftProbability", "MultiplyShiftRam", "Examples"]
+DEDUP_MODULES = ["Specification", "Model", "Bounds", "Program", "Representation", "Insertion",
+                 "Blocks", "Clear", "Round", "Search", "Loop", "Initialization", "Correctness", "Expected", "Examples"]
 PROBABILITY_MODULES = ["Finite", "Retry", "FiniteSearch", "Examples"]
 FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("Hashing") / f"{m}.lean" for m in HASHING_MODULES
-] + [Path("Probability") / f"{m}.lean" for m in PROBABILITY_MODULES] + [
+] + [Path("Probability") / f"{m}.lean" for m in PROBABILITY_MODULES ] + [Path("Algorithms/Dedup") / f"{m}.lean" for m in DEDUP_MODULES] + [
     Path("DataStructures/StaticSet/Specification.lean"),
     Path("DataStructures/PerfectHash/Admissibility.lean"),
     Path("DataStructures/PerfectHash/Specification.lean"),
@@ -32,7 +34,7 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
 
 def module_label(file):
     """Keep distinct labels for modules sharing a basename such as Specification."""
-    if file.parts[0] in {"Hashing", "Probability"}:
+    if file.parts[0] in {"Hashing", "Probability", "Algorithms"}:
         return ".".join(file.with_suffix("").parts)
     if file.parts[0] == "DataStructures":
         return ".".join(file.with_suffix("").parts[1:])
