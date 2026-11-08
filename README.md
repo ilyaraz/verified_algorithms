@@ -83,3 +83,9 @@ machine library, or `WordRam.Properties` for the executable machine and its core
 proofs without Mathlib probability imports. [Examples](WordRam/Examples.lean)
 contain small verified programs; [Checks.lean](Checks.lean) checks probability
 examples and audits proof dependencies.
+
+The alternative [structured word-RAM development](docs/ramlang-contract.md)
+adds an independent recursive source language under `RamLang/`. Its milestone
+ledger distinguishes implemented semantics from the remaining compiler proofs
+and separate perfect-hashing source integration. Import `RamLang` for the
+checked core, source evaluator, and recursive examples.

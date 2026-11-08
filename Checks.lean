@@ -15,7 +15,7 @@ import Probability.Examples
 import Algorithms
 import Algorithms.Dedup.Examples
 import Lean
-
+import RamLang
 open WordRam
 
 example : word 4 15 + word 4 1 = word 4 0 := by decide
@@ -72,7 +72,7 @@ end WordRam.Examples
 run_cmd do
   let env ← Lean.getEnv
   let allowed := [``propext, ``Classical.choice, ``Quot.sound]
-  let projectModules := [`WordRam, `DataStructures, `Hashing, `Probability,
+  let projectModules := [`WordRam, `RamLang, `DataStructures, `Hashing, `Probability,
     `Algorithms, `PerfectHashTools, `Checks]
   let mut checked := 0
   for (name, _) in env.constants.toList do
@@ -84,7 +84,18 @@ run_cmd do
           throwError "Unexpected axiom in {name}: {ax}"
       checked := checked + 1
   Lean.logInfo m!"Axiom audit passed for {checked} library declarations."
-  let executable := [``word, ``unsignedMod, ``unsignedShiftRight, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
+  let executable := [``RamLang.requireSome, ``RamLang.Binary.eval,
+      ``RamLang.Function.slots, ``RamLang.Function.frameSize, ``RamLang.duplicate,
+      ``RamLang.checkLocal, ``RamLang.checkAtom, ``RamLang.checkCondition,
+      ``RamLang.checkPrimitive, ``RamLang.joinInitialized, ``RamLang.checkStmt,
+      ``RamLang.checkFunction, ``RamLang.check, ``RamLang.Atom.eval, ``RamLang.writeLocal,
+      ``RamLang.Condition.eval, ``RamLang.Primitive.eval, ``RamLang.Config.initial,
+      ``RamLang.Config.stackWords, ``RamLang.enter, ``RamLang.step,
+      ``RamLang.RunResult.prepend, ``RamLang.run,
+      ``RamLang.Examples.sumFunction, ``RamLang.Examples.sum, ``RamLang.Examples.execute,
+      ``RamLang.Examples.parityFunction, ``RamLang.Examples.parity,
+      ``RamLang.Examples.earlyReturn, ``RamLang.Examples.spin, ``RamLang.Examples.spinState,
+      ``word, ``unsignedMod, ``unsignedShiftRight, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
       ``State.zero, ``State.put, ``step, ``run, ``RunResult.prepend,
       ``RunResult.dataFootprint, ``RunResult.writeFootprint, ``RunResult.randomReads,
       ``RunResult.randomFootprint, ``RunResult.randomBitsExposed,

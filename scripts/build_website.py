@@ -118,10 +118,11 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("Checks.lean"),
 ]
 
+FILES += [Path("RamLang") / f"{m}.lean" for m in ["Syntax", "WellFormed", "Semantics", "Execution", "Examples"]]
 
 def module_label(file):
     """Keep distinct labels for modules sharing a basename such as Specification."""
-    if file.parts[0] in {"Hashing", "Probability", "Algorithms", "PerfectHashTools"}:
+    if file.parts[0] in {"Hashing", "Probability", "Algorithms", "PerfectHashTools", "RamLang"}:
         return ".".join(file.with_suffix("").parts)
     if file.parts[0] == "DataStructures":
         return ".".join(file.with_suffix("").parts[1:])
@@ -291,7 +292,7 @@ def make_graph(raw, descriptions):
 
 
 def render_sources():
-    for file in FILES + [Path("WordRam.lean"), Path("DataStructures.lean")]:
+    for file in FILES + [Path("WordRam.lean"), Path("RamLang.lean"), Path("DataStructures.lean")]:
         text = (ROOT / file).read_text()
         destination = OUT / "source" / file
         destination.parent.mkdir(parents=True, exist_ok=True)

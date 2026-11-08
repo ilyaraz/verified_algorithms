@@ -153,7 +153,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | --- | --- |
 | L0 semantics and ABI | complete: this contract |
 | L1 ISA and compatibility | complete: `WordRam/Calls.lean`, checked relocation subset |
-| L2 independent source semantics | pending |
+| L2 independent source semantics | complete: checker, source steps/evaluator, ideal-capacity correspondence, recursion examples |
 | L3 recursive compiler | pending |
 | L4 simulation and resources | pending |
 | L5 source logic | pending |

@@ -6,7 +6,7 @@ run_cmd do
   let mut rows : Array Json := #[]
   for (name, info) in env.constants.toList do
     let mod := (← findModuleOf? name).getD `Checks
-    if mod.getRoot == `WordRam || mod.getRoot == `DataStructures || mod.getRoot == `Hashing || mod.getRoot == `Probability || mod.getRoot == `Algorithms || mod.getRoot == `PerfectHashTools || mod == `Checks then
+    if mod.getRoot == `RamLang || mod.getRoot == `WordRam || mod.getRoot == `DataStructures || mod.getRoot == `Hashing || mod.getRoot == `Probability || mod.getRoot == `Algorithms || mod.getRoot == `PerfectHashTools || mod == `Checks then
       let ranges ← findDeclarationRanges? name
       let kind := match info with
         | .thmInfo _ => "theorem"

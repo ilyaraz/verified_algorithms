@@ -1,7 +1,8 @@
 # Lean Atlas
 
 A static, offline-capable browser for the Word RAM formalization and completed
-certified perfect-hash dictionary, including its executable export tools. It
+certified perfect-hash dictionary, the independent recursive RamLang language,
+and executable export tools. It
 includes all authored declarations in the library, tools, and checks, with distinct
 definition/statement shapes and colors, natural-language descriptions, a full
 dependency diagram, focused neighborhoods, search, filters, and exact source links.
@@ -96,3 +97,11 @@ local `file://` build. `CHROMIUM_EXECUTABLE` can select an existing Chromium bin
 
 The `.openai/hosting.json` manifest records the optional owner-private Sites
 deployment. It is not needed for local browsing or hosting elsewhere.
+
+## Structured language milestones
+
+The published `ramlang.html` page mirrors the [ABI contract and milestone ledger](../docs/ramlang-contract.md).
+RamLang modules have distinct `RamLang.*` labels and import only the reusable
+machine library. Search for `RamLang.step_ideal_of_fits` and
+`RamLang.Examples.spin_diverges` to inspect source semantics and capacity proofs.
+The ledger explicitly separates completed milestones from remaining work.
