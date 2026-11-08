@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+task_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+task_bin="$task_root/.toolchain/lean-4.24.0-linux/bin"
+if [[ ! -x "$task_bin/lake" ]]; then
+  printf '%s\n' 'Run ./bootstrap.sh first, or use Lake through Elan.' >&2
+  exit 1
+fi
+export PATH="$task_bin:$PATH"
+export MATHLIB_CACHE_DIR="$task_root/.downloads/mathlib-cache"
+cd "$task_root"
+exec "$task_bin/lake" "$@"
