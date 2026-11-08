@@ -31,10 +31,17 @@ class WebsiteTests(unittest.TestCase):
             ("WordRam.Operand", "WordRam.Instr"),  # Instruction constructors.
             ("WordRam.Examples.r0", "WordRam.Examples.arithmetic"),  # Private name.
             ("WordRam.wordFintype", "WordRam.randomMemoryLaw"),  # Inferred instance.
-            ("WordRam.probability_two_cells", "Checks.example_18"),  # Anonymous proof.
+            ("WordRam.probability_two_cells", "Checks.example_20"),  # Anonymous proof.
+            ("StaticSet.QuerySpec", "PerfectHash.DictionarySpec"),
+            ("StaticSet.QuerySpec.after_overwrite", "PerfectHash.DictionarySpec.query_after_build"),
         ]:
             self.assertIn(edge, self.edges)
         self.assertNotIn(("WordRam.update", "WordRam.word"), self.edges)
+
+    def test_dictionary_module_labels_are_distinct(self):
+        self.assertEqual(self.nodes["StaticSet.QuerySpec"]["module"], "StaticSet.Specification")
+        self.assertEqual(self.nodes["PerfectHash.DictionarySpec"]["module"], "PerfectHash.Specification")
+        self.assertEqual(len(self.graph["modules"]), len(set(self.graph["modules"])))
 
     def test_edges_and_reverse_index_agree(self):
         for e in self.graph["edges"]:

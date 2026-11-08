@@ -1,6 +1,6 @@
 name = "verifiable_algorithms"
 version = "0.1.0"
-defaultTargets = ["WordRam", "Checks"]
+defaultTargets = ["WordRam", "DataStructures", "Checks"]
 
 [[require]]
 name = "mathlib"
@@ -9,6 +9,9 @@ rev = "f897ebcf72cd16f89ab4577d0c826cd14afaafc7"
 
 [[lean_lib]]
 name = "WordRam"
+
+[[lean_lib]]
+name = "DataStructures"
 
 [[lean_lib]]
 name = "Checks"

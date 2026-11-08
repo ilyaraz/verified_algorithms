@@ -1,7 +1,7 @@
 # Lean Atlas
 
-A static, offline-capable browser for the Word RAM formalization. It includes all
-161 authored declarations in the current library and checks, with distinct
+A static, offline-capable browser for the Word RAM formalization and static
+dictionary specification. It includes all authored declarations in the library and checks, with distinct
 definition/statement shapes and colors, natural-language descriptions, a full
 dependency diagram, focused neighborhoods, search, filters, and exact source links.
 
@@ -35,13 +35,15 @@ each edge is logically necessary. An arrow goes **from dependency to user**.
 Definitions include proposition-valued definitions and inductive relations such
 as `Step` and `Steps`; statements are proved theorems and examples. Private
 definitions are included. Constructors and fields are visible in their parent’s
-Lean declaration. The root `WordRam.lean` file contains imports only, and its
-source is also exported.
+Lean declaration. The root `WordRam.lean` and `DataStructures.lean` files contain
+imports only, and their source is also exported.
 
 Handwritten explanations live in `descriptions.json`, keyed by full declaration
 name. The build fails if an authored declaration lacks a description or cannot
 be matched to Lean’s source-location metadata. New modules should be added to
-`MODULES` in the builder and imported by the check target. Rebuild after changing
+`FILES` in the builder and imported by the check target. Nested dictionary modules
+use distinct labels such as `StaticSet.Specification` and `PerfectHash.Specification`.
+Rebuild after changing
 Lean files or descriptions; generated output is ignored by Git. For frontend-only
 edits, `--render-only` reuses the extraction only if the Lean input fingerprint
 still matches.

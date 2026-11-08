@@ -15,8 +15,24 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
-MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Random", "Examples"]
-FILES = [Path("WordRam") / f"{m}.lean" for m in MODULES] + [Path("Checks.lean")]
+WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Random", "Examples"]
+FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
+    Path("DataStructures/StaticSet/Specification.lean"),
+    Path("DataStructures/PerfectHash/Admissibility.lean"),
+    Path("DataStructures/PerfectHash/Specification.lean"),
+    Path("DataStructures/PerfectHash/Examples.lean"),
+    Path("Checks.lean"),
+]
+
+
+def module_label(file):
+    """Keep distinct labels for modules sharing a basename such as Specification."""
+    if file.parts[0] == "DataStructures":
+        return ".".join(file.with_suffix("").parts[1:])
+    return file.stem
+
+
+MODULES = [module_label(file) for file in FILES]
 
 
 def mask_comments(source: str) -> str:
@@ -87,7 +103,7 @@ def authored_declarations():
                 full_name = ".".join([p for p in namespace if p] + [name])
             declarations.append(dict(id=full_name, name=name, kind=kind,
                 category="statement" if kind in {"theorem", "lemma", "axiom", "example"} else "definition",
-                file=file.as_posix(), module=file.stem, line=line, private=modifier == "private"))
+                file=file.as_posix(), module=module_label(file), line=line, private=modifier == "private"))
     return declarations
 
 
@@ -179,7 +195,7 @@ def make_graph(raw, descriptions):
 
 
 def render_sources():
-    for file in FILES + [Path("WordRam.lean")]:
+    for file in FILES + [Path("WordRam.lean"), Path("DataStructures.lean")]:
         text = (ROOT / file).read_text()
         destination = OUT / "source" / file
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -208,7 +224,7 @@ def main():
     for file in (SITE / "assets").iterdir():
         if file.is_file():
             shutil.copy2(file, OUT / file.name)
-    data = dict(nodes=nodes, edges=edges, modules=MODULES + ["Checks"], fingerprint=fingerprint,
+    data = dict(nodes=nodes, edges=edges, modules=MODULES, fingerprint=fingerprint,
         method="References in Lean-elaborated types and bodies. Generated constructors, fields, recursors and helpers are grouped into their authored declaration. External libraries are omitted.")
     (OUT / "graph.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
     # A classic script keeps file:// browsing functional, without fetch or a CDN.

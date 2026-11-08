@@ -6,6 +6,10 @@ The library supplies an executable interpreter, exact execution relations, cost 
 
 Read the [word RAM reference](docs/word-ram.md) for the complete machine definition, instruction set, probability semantics, theorem guide, and examples.
 
+The [perfect hashing roadmap](docs/perfect-hashing-plan.md) plans a modular static membership dictionary with repeated-input support, explicit resource bounds, and executable certified programs.
+
+M0's [static dictionary contract](docs/perfect-hashing-spec.md) is implemented in `DataStructures`: calling conventions, explicit admissibility predicates, a full correctness/resource target, and proved feasible layouts. The dictionary programs remain later milestones.
+
 The [Lean Atlas website](website/README.md) provides an interactive dependency diagram,
 plain-language descriptions of every authored definition and statement, and links to
 line-numbered Lean source. Build it after bootstrap with:

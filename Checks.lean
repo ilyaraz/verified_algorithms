@@ -1,5 +1,7 @@
 import WordRam
 import WordRam.Examples
+import DataStructures
+import DataStructures.PerfectHash.Examples
 import Lean
 
 open WordRam
@@ -60,18 +62,28 @@ run_cmd do
   let allowed := [``propext, ``Classical.choice, ``Quot.sound]
   let mut checked := 0
   for (name, _) in env.constants.toList do
-    if name.getRoot == `WordRam then
+    if [`WordRam, `StaticSet, `PerfectHash].contains name.getRoot then
       for ax in ← Lean.collectAxioms name do
         unless allowed.contains ax do
           throwError "Unexpected axiom in {name}: {ax}"
       checked := checked + 1
-  Lean.logInfo m!"Axiom audit passed for {checked} WordRam declarations."
+  Lean.logInfo m!"Axiom audit passed for {checked} library declarations."
   for name in [``word, ``unsignedMod, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
       ``State.zero, ``State.put, ``step, ``run, ``RunResult.prepend,
       ``RunResult.dataFootprint, ``RunResult.writeFootprint, ``RunResult.randomReads,
       ``RunResult.randomFootprint, ``RunResult.randomBitsExposed,
       ``Examples.arithmetic, ``Examples.mulMod, ``Examples.randomRoundTrip,
-      ``Examples.countdown, ``Examples.spin, ``Examples.branchExample] do
+      ``Examples.countdown, ``Examples.spin, ``Examples.branchExample,
+      ``StaticSet.registerCount, ``StaticSet.readDescriptor,
+      ``PerfectHash.dictionaryCapacity, ``PerfectHash.workspaceCapacity,
+      ``PerfectHash.bucketCapacity, ``PerfectHash.randomCapacity,
+      ``PerfectHash.Layout.input, ``PerfectHash.Layout.output,
+      ``PerfectHash.Layout.scratch, ``PerfectHash.Layout.random,
+      ``PerfectHash.buildRegisters, ``PerfectHash.peakWords,
+      ``PerfectHash.canonicalLayout, ``PerfectHash.sufficientWidth,
+      ``PerfectHash.embedWord, ``PerfectHash.inputMemory,
+      ``PerfectHash.worstInstructions, ``PerfectHash.constructionFuel,
+      ``PerfectHash.Examples.repeatedBoundaryInput] do
     let axioms ← Lean.collectAxioms name
     unless axioms.isEmpty do
       throwError "Executable definition {name} uses axioms: {axioms}"
