@@ -43,6 +43,21 @@ class WebsiteTests(unittest.TestCase):
         self.assertEqual(self.nodes["PerfectHash.DictionarySpec"]["module"], "PerfectHash.Specification")
         self.assertEqual(len(self.graph["modules"]), len(set(self.graph["modules"])))
 
+    def test_certified_program_and_export_proof_paths(self):
+        for edge in [
+            ("PerfectHash.Total.specification", "PerfectHash.fksCode_correct"),
+            ("PerfectHash.fksCode", "PerfectHash.certifiedFKS"),
+            ("PerfectHash.fksCode_correct", "PerfectHash.certifiedFKS"),
+            ("PerfectHash.certifiedFKS", "PerfectHash.dictionary_algorithms_exist"),
+            ("PerfectHash.Total.expected_instructions", "PerfectHash.Total.construction_expected"),
+            ("WordRam.footprint_three", "PerfectHash.Total.access_of_policy"),
+            ("PerfectHash.fksCode", "PerfectHash.Export.source"),
+            ("PerfectHash.fksCode", "PerfectHash.Exported.preprocess_roundtrip"),
+            ("PerfectHash.fksCode", "PerfectHash.Exported.query_roundtrip"),
+        ]:
+            self.assertIn(edge, self.edges)
+        self.assertEqual(self.nodes["PerfectHash.Export.source"]["module"], "PerfectHashTools.Export")
+
     def test_edges_and_reverse_index_agree(self):
         for e in self.graph["edges"]:
             a, b = e["source"], e["target"]

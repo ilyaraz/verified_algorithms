@@ -203,6 +203,19 @@ The agreement theorem allows adaptive addresses. Its hypothesis concerns the add
 
 To prove a new program correct, establish instruction or block facts using `step`, build continuing fragments with `Steps`, compose them with `Steps.trans`, and finish with a halt. Alternatively, small finite examples can be proved directly from `run`. Separate numeric invariants, memory predicates, and program execution facts so that arithmetic assumptions remain visible.
 
+`BodyEmbedded` permits inlining a callee's continuing instructions while replacing
+its halts. `HaltsTo` checks that each halt becomes a jump to the caller's
+continuation. `TerminatesIn.call` preserves the callee's registers, memory,
+access trace, and charged instruction count: the replacement jump costs the same
+as the standalone halt. Register-frame lemmas justify preserving caller control
+registers across these calls.
+
+`RetryStepContract` connects a bounded random trial loop to the finite retry
+model, including rejected trials, exact consumed addresses, and access policy.
+`SearchStepContract.run` composes deterministic candidate trials with a finite
+cost bound and no random reads. These interfaces are used by the perfect-hash
+constructor; both are derived from the same `Step` and `Steps` semantics.
+
 ## Probability semantics
 
 The type `RandomMemory w` allows any memory image. Uniformity is a property of the distribution `randomMemoryLaw w`, not a restriction on which images can be passed to `run`.
@@ -258,7 +271,13 @@ The standalone probability checks at width one demonstrate masses `1/2` for one 
 
 The register-free program `Examples.spin = #[.jump 0]` diverges at PC zero. `Examples.spin_diverges` proves this for every random memory, and `Examples.spin_expectedSteps` proves that its expected bounded cost is exactly the fuel budget. Unfinished work is therefore retained rather than counted as zero.
 
-There is no definition or theorem here for a particular algorithm's unbounded expected running time. Such a result must handle nontermination and distinguish successful termination from faults.
+For total algorithms, this finite interface can measure cost through successful
+completion. First prove that one fuel bound suffices for every random image;
+then bound the expected actual instruction count at that fuel. The dictionary's
+`PerfectHash.Total.run_total` supplies the first fact and
+`PerfectHash.Total.expected_instructions` the second. The expectation includes
+exhausted random retries and their deterministic fallback. Sufficient fuel is
+derived from the all-image worst-case bound and is larger than the expected cost.
 
 ## Resource observations
 
@@ -279,6 +298,13 @@ Footprints are lists with duplicates removed. Their order is not part of the res
 For an algorithm's writable-space bound, account for its ordinary-memory footprint and the fixed `R` registers. Program code, PC, external random memory, and semantic traces are excluded from writable workspace by convention. The total capacity of either memory is always `U` cells regardless of how many are touched.
 
 Random reads cost time even when they revisit an address. Repeated reads do not expose additional independent word coordinates. The bit count records revealed coordinates; it is not a theorem about the Shannon entropy of a variable-length transcript.
+
+`footprint_three` bounds a run's distinct ordinary addresses by the sum of three
+permitted region sizes. Its proof uses `Region.cells` and the duplicate-removal
+lemmas, so repeated accesses do not inflate the storage bound. The dictionary
+applies it to input, output reservation, and scratch at every fuel prefix, then
+adds the 64 registers. `RunResult.exposed_le_reads` separately proves that exposed
+bits are at most word width times the number of random reads.
 
 ## Consequences of finite words and random memory
 
@@ -329,7 +355,10 @@ For Linux x86-64:
 
 The bootstrap script downloads the official Lean archive, checks its SHA-256, extracts it under `.toolchain/`, and obtains Mathlib's build cache. It requires Bash, curl, Git, tar with zstd support, and `sha256sum`. The `./lake` wrapper uses only the toolchain in this repository and stores the Mathlib download cache under `.downloads/`. It does not modify shell profiles or install a global toolchain. Downloads and build artifacts are ignored by Git.
 
-After bootstrap, `./check.sh` builds the library and check target, then executes the audit again even if Lake considers the check target current. Builds and checks then work offline.
+After bootstrap, `./check.sh` builds all libraries, tools, and the check target.
+It reruns the axiom audit, the total dictionary's boundary and forced-fallback
+executions, export regeneration and round-trip proofs, and the demo even if Lake
+considers their compiled modules current. Builds and checks then work offline.
 
 An existing Elan installation can use the same project configuration with `lake exe cache get`, `lake build`, and `lake env lean Checks.lean` instead. The bundled bootstrap is specifically for Linux x86-64; other platforms should use their usual Lean installation.
 
@@ -385,8 +414,13 @@ The library's `Examples.randomRoundTrip_spec` proves the analogous program's beh
 | [Regions.lean](../WordRam/Regions.lean) | Fitting intervals, array assertions, separation, and memory agreement. |
 | [Blocks.lean](../WordRam/Blocks.lean) | Block composition, trace permissions, prefix locality, and fault exclusion. |
 | [Assembly.lean](../WordRam/Assembly.lean) | Symbolic labels, executable assembly, and execution-preserving relocation. |
+| [Refinement.lean](../WordRam/Refinement.lean) | Inlined calls with charged continuation jumps and register preservation. |
+| [BoundedRetry.lean](../WordRam/BoundedRetry.lean) | Concrete bounded trial execution, stopping behavior, and consumed random addresses. |
+| [DeterministicSearch.lean](../WordRam/DeterministicSearch.lean) | Charged finite candidate enumeration without random reads. |
+| [Footprint.lean](../WordRam/Footprint.lean) | Distinct-address bounds from permitted regions and exposed-bit bounds. |
 | [Arrays.lean](../WordRam/Arrays.lean) | Verified fill, copy, and traversal loops with exact instruction counts. |
 | [Random.lean](../WordRam/Random.lean) | Finite instances, probability laws, counting, independence, conditioning, and expected bounded work. |
+| [RandomBlocks.lean](../WordRam/RandomBlocks.lean) | Uniform coordinate laws, disjoint block independence, history-dependent stage transfer, and fitting addresses. |
 | [Examples.lean](../WordRam/Examples.lean) | Small assembly programs, semantic specifications, and execution checks. |
 | [Checks.lean](../Checks.lean) | Additional arithmetic/probability checks and the axiom audit. |
 
@@ -394,6 +428,21 @@ The library's `Examples.randomRoundTrip_spec` proves the analogous program's beh
 
 The validation suite checks wraparound and remainder boundaries, destination/source aliasing, random-memory separation, repeated reads, all comparison kinds, exact loop counts, zero width, zero registers, halt and invalid fetch, falling off code, partial stores, and tiny probability examples. General theorems cover resumption, memory preservation, determinism, and agreement beyond those examples.
 
-The audit rejects `sorryAx` and any project-specific axiom dependency. Proofs may use the standard Lean axioms `propext`, `Classical.choice`, and `Quot.sound`. It separately checks that the executable interpreter, resource observers, and shipped program constants have **no axiom dependencies**. Program constants use explicit bounded register constructors to avoid the proof dependency introduced by the pinned toolchain's generic `Fin` numeral conversion.
+The audit selects declarations by their source modules, including private
+helpers, generated declarations, and the check file's examples. It rejects
+`sorryAx` and any project-specific axiom dependency. Proofs may use the standard
+Lean axioms `propext`, `Classical.choice`, and `Quot.sound`. A separate explicit
+inventory checks that the executable interpreter, resource observers, program
+constants, exporter, and demo have **no axiom dependencies**, including their
+transitive helpers. Program constants use explicit bounded register constructors
+to avoid the proof dependency introduced by the pinned toolchain's generic `Fin`
+numeral conversion.
 
-The proofs are checked by Lean's kernel. Small execution checks use `decide` or ordinary proof terms; `native_decide` is not used. The audit metaprogram inspects declarations and does not manufacture proofs. As with any formal model, the resulting guarantees concern the definitions here; machine-code performance, an operating-system random source, and an external interpreter require separate arguments.
+The proofs are checked by Lean's kernel. Small execution checks use `decide` or
+ordinary proof terms; `native_decide` is not used. Larger dictionary integration
+fixtures use `#eval` and fail on a mismatch. Those executions supply test evidence;
+the general contracts and exported-array equalities are kernel-checked theorems.
+The audit metaprogram inspects declarations and does not manufacture proofs.
+Machine-code performance, an operating-system random source, and an external
+interpreter require separate arguments. The [dictionary audit guide](perfect-hashing-audit.md)
+records the complete certificate and its assumptions.

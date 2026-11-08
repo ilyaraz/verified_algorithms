@@ -1,14 +1,40 @@
 # Verifiable algorithms
 
-A Lean word-RAM model with finite assembly programs, wrapping arithmetic, mutable data memory, and a separate addressable read-only memory of independent uniform words.
+A Lean word-RAM library with an executable, certified static membership dictionary
+using two-level perfect hashing. Its fixed 238-instruction constructor accepts
+repeated full-word keys and terminates successfully for every random-memory
+image. Under the finite uniform random-memory law, preprocessing takes at most
+`10000*(N+1)` expected instructions. Queries take at most 33 instructions; the
+retained dictionary uses at most `64*(d+1)` words, where `N` counts occurrences
+and `d` counts distinct keys.
 
-The library supplies an executable interpreter, exact execution relations, cost and memory-preservation proofs, and a finite probability model for random memory.
+The [public certificate](DataStructures/PerfectHash/Certified.lean) proves the
+[original contract](docs/perfect-hashing-spec.md), including explicit memory-fit
+assumptions, dirty initial memory, peak space, random reads, and queries after
+overwriting all unretained memory. The [completed M0–M11 plan](docs/perfect-hashing-plan.md)
+and [audit guide](docs/perfect-hashing-audit.md) explain the proof structure and
+verification coverage.
 
-Read the [word RAM reference](docs/word-ram.md) for the complete machine definition, instruction set, probability semantics, theorem guide, and examples.
+```lean
+import DataStructures.PerfectHash.Certified
 
-The [perfect hashing roadmap](docs/perfect-hashing-plan.md) plans a modular static membership dictionary with repeated-input support, explicit resource bounds, and executable certified programs.
+#check PerfectHash.fksCode_correct
+#check PerfectHash.certified_query_after_build
+#check PerfectHash.dictionary_algorithms_exist
+```
 
-M0's [static dictionary contract](docs/perfect-hashing-spec.md) is implemented in `DataStructures`: calling conventions, explicit admissibility predicates, a full correctness/resource target, and proved feasible layouts. M1 adds logical right shift, reusable memory/block assertions, labelled assembly with proved relocation, and verified fill/copy/traversal loops. M2 supplies the [verified multiply-shift family](docs/hashing.md), sampler, finite enumeration, and constant-cost RAM evaluator. M3 adds [finite retry/fallback proofs and random-block law transfer](docs/finite-search.md). M4 supplies [verified expected-linear deduplication](docs/deduplication.md), including arbitrary repetitions and dirty memory. M5 establishes [FKS combinatorics and total abstract construction](docs/fks-abstract.md), including expected linear trial work. M6 adds the [packed representation and verified constant-time RAM query](docs/perfect-hashing-query.md). M7 supplies [verified root/child construction trials, allocation, and enumeration](docs/perfect-hashing-trials.md), with exact costs and overflow-safe rejection. M8 assembles the [bounded constructor with end-to-end refinement](docs/perfect-hashing-bounded.md), explicit failure status, finite fuel, prefix safety, and queries after workspace reuse. M9 proves the [total constructor and complete resource contract](docs/perfect-hashing-total.md): successful construction for every random image, expected linear preprocessing, bounded random reads, and prefix peak space. M10 provides the [explicit certified value, executable demo, and kernel-validated source export](docs/perfect-hashing-export.md).
+The underlying machine has wrapping arithmetic, unit-cost multiplication,
+remainder and logical right shift, mutable data memory, and separate immutable
+addressed random memory. The [word RAM reference](docs/word-ram.md) defines its
+semantics, interpreter, execution costs, and probability model.
+
+| Component | Reference |
+| --- | --- |
+| Full-word hashing and finite search | [Multiply-shift](docs/hashing.md), [retry and fallback](docs/finite-search.md) |
+| Repeated-input processing and FKS mathematics | [Deduplication](docs/deduplication.md), [abstract construction](docs/fks-abstract.md) |
+| Retained format and query | [Layout and constant-time query](docs/perfect-hashing-query.md) |
+| Concrete preprocessing | [Trial blocks](docs/perfect-hashing-trials.md), [bounded constructor](docs/perfect-hashing-bounded.md), [total constructor and bounds](docs/perfect-hashing-total.md) |
+| Executable interface | [Certificate, demo, and checked source export](docs/perfect-hashing-export.md) |
 
 The [Lean Atlas website](website/README.md) provides an interactive dependency diagram,
 plain-language descriptions of every authored definition and statement, and links to
@@ -29,7 +55,17 @@ On Linux x86-64, bootstrap the pinned Lean 4.24.0 toolchain and Mathlib dependen
 ./check.sh
 ```
 
-After bootstrap, checks work offline. If Lean is managed through Elan instead, the committed `lean-toolchain`, `lakefile.toml`, and `lake-manifest.json` also support standard Lake commands:
+After bootstrap, checks work offline. `./check.sh` builds all targets, audits proof
+and executable dependencies, reruns the total-constructor boundary/fallback
+fixtures, validates regenerated program exports, and runs the demo. Run the demo
+on its own with:
+
+```sh
+./lake env lean -s 131072 --run PerfectHashTools/Main.lean demo
+```
+
+If Lean is managed through Elan instead, the committed `lean-toolchain`,
+`lakefile.toml`, and `lake-manifest.json` also support standard Lake commands:
 
 ```sh
 lake exe cache get
@@ -37,4 +73,8 @@ lake build
 lake env lean Checks.lean
 ```
 
-Import `WordRam` for the complete library, or `WordRam.Properties` for the executable machine and its core proofs without Mathlib probability imports. [Examples](WordRam/Examples.lean) contain small verified programs; [Checks.lean](Checks.lean) checks probability examples and audits proof dependencies.
+Import `DataStructures` for the certified dictionary, `WordRam` for the complete
+machine library, or `WordRam.Properties` for the executable machine and its core
+proofs without Mathlib probability imports. [Examples](WordRam/Examples.lean)
+contain small verified programs; [Checks.lean](Checks.lean) checks probability
+examples and audits proof dependencies.

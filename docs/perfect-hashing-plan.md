@@ -1,10 +1,26 @@
 # Plan: a modular, executable proof of static perfect hashing
 
-This is an implementation roadmap, not a claim that the proposed hashing theorems already exist in this repository. It is based on an inspection of the current word-RAM library and `~/code/personal_agent/word_ram_stack`, including its `PerfectHash/`, `FKS/Linear/`, and generic retry proofs.
+**Status: M0–M11 are implemented.** The explicit certificate is
+[`PerfectHash.certifiedFKS`](../DataStructures/PerfectHash/Certified.lean).
+The [total-construction reference](perfect-hashing-total.md) records the proved
+constants; the [audit guide](perfect-hashing-audit.md) connects the public contract,
+construction, representation, query, and exported arrays.
+
+This document retains the original design rationale and milestone acceptance
+criteria, with implementation notes at each milestone. Its reference comparison
+was based on the initial word-RAM library and `~/code/personal_agent/word_ram_stack`,
+including its `PerfectHash/`, `FKS/Linear/`, and generic retry proofs.
 
 The target is a **fixed pair of finite RAM programs**: preprocessing builds a static membership dictionary from an array that may contain repetitions; query decides membership for every word. The intended final bounds are expected `O(N+1)` preprocessing instructions, worst-case `O(1)` query instructions, `O(d+1)` retained dictionary words, and `O(N+1)` peak ordinary memory, where `N` is the input length and `d` is the number of distinct words. All constants, machine operations, randomness assumptions, memory conditions, and quantifier order must be explicit.
 
-The recommended route is two-level FKS hashing, a separate verified deduplication pass, a reusable collision-bounded hash interface, and concrete program witnesses packaged with proofs. For full-width keys, use multiply-shift hashing with an explicitly specified logical-right-shift instruction. Preserve the current finite random-memory semantics; obtain a total constructor by combining capped random retries with deterministic seed enumeration. These are proposed design choices to settle in milestone M0, not changes made by this plan.
+The implemented route is two-level FKS hashing, a separate verified deduplication
+pass, a reusable collision-bounded hash interface, and concrete program witnesses
+packaged with proofs. Full-width keys use multiply-shift hashing with the logical
+right shift specified in M0 and implemented in M1. Capped random retries followed
+by deterministic seed enumeration give total construction under the original
+finite random-memory semantics. The M0 public contract and admissibility ledger
+remain unchanged; M1 moved shared region assertions into `WordRam` and retained
+their `StaticSet` compatibility names.
 
 ## 1. What the existing code establishes, and what needs redesign
 
@@ -20,7 +36,13 @@ The existing foundations are appropriate and should remain authoritative:
 | [Checks](../Checks.lean) | Audits standard proof axioms separately from executable definitions, which must have no axiom dependencies. |
 | [Machine reference](word-ram.md) | Existing statement of the model, including unit-cost multiplication/remainder and the distinction between RAM cost and interpreter runtime. |
 
-The project pins Lean 4.24.0 and Mathlib commit `f897ebcf72cd16f89ab4577d0c826cd14afaafc7`. Use those local sources when selecting APIs. The current probability interface is about bounded executions; it does not yet define or prove expected time to successful termination. The initial instruction set had neither division nor shifts; M1 now supplies the frozen logical-right-shift instruction. M1 supplies reusable memory-region assertions, verified array loops, and code relocation alongside `Steps.trans`. Hashing-specific refinements remain later milestones.
+The project pins Lean 4.24.0 and Mathlib commit `f897ebcf72cd16f89ab4577d0c826cd14afaafc7`.
+The probability interface averages bounded executions. M9 proves a uniform
+sufficient fuel bound and successful termination for every random image, making
+its expected instruction bound a cost to completion. The initial instruction set
+had neither division nor shifts; M1 supplies the frozen logical-right-shift
+instruction, shared region assertions, verified array loops, and code relocation.
+M7–M9 connect hashing, retries, and fallback to actual executed instructions.
 
 ### Reference implementation
 
@@ -478,6 +500,14 @@ Build a concrete certified value containing the two program arrays, entry conven
 
 ### M11 — Audit, document, and exercise the completed development
 
+**Implemented:** the audit checks declarations by source module, including private
+helpers, and separately requires axiom-free executable definitions. `./check.sh`
+builds all targets and reruns the audits, boundary/fallback executions, export
+regeneration, round-trip proofs, and demo even with cached artifacts. The machine,
+dictionary, export, and Atlas references cover the completed development. Atlas
+checks include the public certificate, resource proofs, and exported-array
+dependency paths. See the [final audit guide](perfect-hashing-audit.md).
+
 **Dependencies:** M10; perform focused checks at every earlier milestone. **Main risk:** a theorem that is technically proved but hard to review or easy to misstate.
 
 Extend audit coverage to every new namespace and to the executable definitions. Add the relevant Lake targets and check script integration. Update the machine reference, a dictionary reference, and the Lean Atlas file/description inventory; the current atlas explicitly lists modules, so new modules will not appear automatically. Record each public theorem's assumptions, constants, and dependency direction.
@@ -575,4 +605,7 @@ Useful review checkpoints are:
 
 Dynamic insertion/deletion, key-value maps, minimal perfect hashing, succinct storage, prime discovery, cryptographic randomness, concurrent mutation, and a proved native compiler are separate follow-up projects. They should not expand this development before the static membership theorem is complete. A stronger preprocessing tail bound or a smaller random-memory reservation can also be added later without changing dictionary semantics.
 
-The first implementation change should be M0's specification and assumption predicates, followed by the small full-word hash and finite-search proof prototypes. That resolves the main model risks before investing in the full constructor's assembly and invariants.
+Implementation followed M0's specification and assumption predicates, then the
+full-word hash and finite-search proofs, and finally the constructor and public
+certificate. Each of M1–M11 has its own commit. The completed result meets the
+original public contract without strengthening its preconditions.

@@ -1,7 +1,8 @@
 # Lean Atlas
 
-A static, offline-capable browser for the Word RAM formalization and static
-dictionary specification. It includes all authored declarations in the library and checks, with distinct
+A static, offline-capable browser for the Word RAM formalization and completed
+certified perfect-hash dictionary, including its executable export tools. It
+includes all authored declarations in the library, tools, and checks, with distinct
 definition/statement shapes and colors, natural-language descriptions, a full
 dependency diagram, focused neighborhoods, search, filters, and exact source links.
 
@@ -43,6 +44,9 @@ name. The build fails if an authored declaration lacks a description or cannot
 be matched to Lean’s source-location metadata. New modules should be added to
 `FILES` in the builder and imported by the check target. Nested dictionary modules
 use distinct labels such as `StaticSet.Specification` and `PerfectHash.Specification`.
+Tool modules use labels such as `PerfectHashTools.Export` and
+`PerfectHashTools.Generated`; the extractor includes the `PerfectHashTools`
+module root as well as the mathematical libraries.
 Rebuild after changing
 Lean files or descriptions; generated output is ignored by Git. For frontend-only
 edits, `--render-only` reuses the extraction only if the Lean input fingerprint
@@ -54,6 +58,21 @@ shows the exact declaration text. There is no dependency on a Git hosting servic
 Declaration selection, graph view, module, and kind filters are shareable in the
 URL fragment. Search applies to the index; module and kind filters apply to both
 the index and graph. The inspector always lists all of a declaration’s neighbors.
+
+## Reviewing the dictionary
+
+Search for `PerfectHash.certifiedFKS`, then follow its dependencies through
+`fksCode_correct` to `PerfectHash.Total.specification`. That contract combines
+construction correctness, expected resources, and the representation-based query
+theorem. `certified_query_after_build` provides the public build/query statement
+with workspace overwrite allowed. The [audit guide](../docs/perfect-hashing-audit.md)
+lists the assumptions and resource proof paths.
+
+The nodes `PerfectHash.Exported.preprocess_roundtrip` and
+`PerfectHash.Exported.query_roundtrip` connect the generated literal arrays to
+the same `fksCode` used by the certificate. These dependencies come from Lean's
+elaborated equality proofs. Atlas tests check these paths alongside the complete
+declaration inventory, source snapshots, anchors, and reverse dependency index.
 
 ## Validation
 

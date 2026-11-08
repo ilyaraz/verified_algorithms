@@ -67,20 +67,24 @@ theorem spin_expectedSteps (w fuel : Nat) :
 
 end WordRam.Examples
 
--- Audit every declaration belonging to this library, including all examples.
+-- Audit by source module, including private helpers and all examples.
 -- These commands inspect proofs; they do not provide proof terms to the library.
 run_cmd do
   let env ← Lean.getEnv
   let allowed := [``propext, ``Classical.choice, ``Quot.sound]
+  let projectModules := [`WordRam, `DataStructures, `Hashing, `Probability,
+    `Algorithms, `PerfectHashTools, `Checks]
   let mut checked := 0
   for (name, _) in env.constants.toList do
-    if [`WordRam, `StaticSet, `PerfectHash, `Hashing, `FiniteProbability, `Dedup].contains name.getRoot then
+    -- Declarations in the current check file have no imported module index.
+    let mod := (← Lean.findModuleOf? name).getD `Checks
+    if projectModules.contains mod.getRoot then
       for ax in ← Lean.collectAxioms name do
         unless allowed.contains ax do
           throwError "Unexpected axiom in {name}: {ax}"
       checked := checked + 1
   Lean.logInfo m!"Axiom audit passed for {checked} library declarations."
-  for name in [``word, ``unsignedMod, ``unsignedShiftRight, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
+  let executable := [``word, ``unsignedMod, ``unsignedShiftRight, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
       ``State.zero, ``State.put, ``step, ``run, ``RunResult.prepend,
       ``RunResult.dataFootprint, ``RunResult.writeFootprint, ``RunResult.randomReads,
       ``RunResult.randomFootprint, ``RunResult.randomBitsExposed,
@@ -253,8 +257,9 @@ run_cmd do
       ``PerfectHash.Export.instruction, ``PerfectHash.Export.program, ``PerfectHash.Export.source,
       ``PerfectHash.Export.write, ``PerfectHash.Demo.keys, ``PerfectHash.Demo.layout,
       ``PerfectHash.Demo.memory, ``PerfectHash.Demo.initial, ``PerfectHash.Demo.built,
-      ``PerfectHash.Demo.query, ``PerfectHash.Demo.run, ``main] do
+      ``PerfectHash.Demo.query, ``PerfectHash.Demo.run, ``main]
+  for name in executable do
     let axioms ← Lean.collectAxioms name
     unless axioms.isEmpty do
       throwError "Executable definition {name} uses axioms: {axioms}"
-  Lean.logInfo "Executable definitions contain no axioms."
+  Lean.logInfo m!"Executable audit passed for {executable.length} definitions: no axiom dependencies."
