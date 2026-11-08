@@ -30,6 +30,8 @@ def instruction : Instr 64 → String
   | .rload d a => ".rload " ++ register d ++ " " ++ operand a
   | .branch c x y target => ".branch " ++ comparison c ++ " " ++ operand x ++ " " ++ operand y ++ " " ++ toString target
   | .jump target => ".jump " ++ toString target
+  | .call link target => ".call " ++ register link ++ " " ++ toString target
+  | .jumpReg target => ".jumpReg " ++ operand target
   | .halt => ".halt"
 
 def program (p : Program 64) : String :=

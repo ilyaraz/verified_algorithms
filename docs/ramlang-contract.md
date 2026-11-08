@@ -152,7 +152,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | Milestone | Status |
 | --- | --- |
 | L0 semantics and ABI | complete: this contract |
-| L1 ISA and compatibility | pending |
+| L1 ISA and compatibility | complete: `WordRam/Calls.lean`, checked relocation subset |
 | L2 independent source semantics | pending |
 | L3 recursive compiler | pending |
 | L4 simulation and resources | pending |

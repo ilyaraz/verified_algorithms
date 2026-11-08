@@ -48,6 +48,8 @@ The program counter (PC) is the state's `pc : Nat`. Fetch reads `p[pc]` when `pc
 | `.branch cmp x y target`, comparison true | `target` |
 | `.branch cmp x y target`, comparison false | `pc + 1` |
 | `.jump target` | `target` |
+| `.call link target` | Save the wrapped successor PC in `link`, then jump to literal `target`. |
+| `.jumpReg target` | Set PC to the unsigned value of the evaluated operand. |
 | `.halt` | No next instruction; the state is preserved. |
 
 Both branch and jump targets are literal natural-number indices supplied when constructing the program. They are absolute indices, with no offset calculation or register-based target evaluation. Unlike word-valued data, the PC and targets do not wrap modulo `U`. The instruction set cannot read the PC into a register or perform arbitrary natural-number arithmetic through it.
@@ -59,7 +61,9 @@ For example, the existing `Examples.countdown` program has this layout, where `r
 | 0 | `.branch .eq (.reg r0) (.imm 0) 3` |
 | 1 | `.sub r0 (.reg r0) (.imm 1)` |
 | 2 | `.jump 0` |
-| 3 | `.halt` |
+| 3 | `.call link target` | Save the wrapped successor PC in `link`, then jump to literal `target`. |
+| `.jumpReg target` | Set PC to the unsigned value of the evaluated operand. |
+| `.halt` |
 
 At index 0, a zero register value sends execution to index 3; otherwise execution proceeds to index 1. Index 2 returns to index 0. This example supplies the target numbers `3` and `0` directly. `Assembly.compile` also accepts symbolic labels, resolves their instruction offsets, and rejects duplicate definitions or missing targets. Label markers occupy no instructions. `Instr.relocate`, `Embedded.append`, and the execution relocation theorems justify embedding assembled blocks between arbitrary neighboring code. A jump or taken branch may set an out-of-range PC, which faults on the next fetch. Falling off the final instruction also faults.
 
@@ -102,6 +106,8 @@ An `Operand R` is either `.reg r` or `.imm n`. Its evaluation reads one register
 | `.rload dst addr` | Read the fixed random memory at the evaluated address into `dst`. |
 | `.branch cmp x y target` | Jump to `target` when the comparison succeeds; otherwise advance PC. |
 | `.jump target` | Set PC to `target`. |
+| `.call link target` | Save the wrapped successor PC in `link`, then jump to literal `target`. |
+| `.jumpReg target` | Set PC to the unsigned value of the evaluated operand. |
 | `.halt` | Terminate successfully, preserving the current state. |
 
 `dst` is a register. Other data arguments are operands. Comparisons `.eq`, `.ne`, `.lt`, and `.le` test equality, inequality, less-than, and less-than-or-equal, respectively; ordering is unsigned. The PC changes according to the control-flow table above. Registers and memory cells not explicitly written by an instruction retain their values.
@@ -202,6 +208,17 @@ Memory and randomness theorems apply to all bounded runs, including unfinished a
 The agreement theorem allows adaptive addresses. Its hypothesis concerns the addresses actually read in the run under `rho`; it does not assume that the alternative execution already follows the same path. Its conclusion includes the entire resulting state, trace, instruction count, and stop reason.
 
 To prove a new program correct, establish instruction or block facts using `step`, build continuing fragments with `Steps`, compose them with `Steps.trans`, and finish with a halt. Alternatively, small finite examples can be proved directly from `run`. Separate numeric invariants, memory predicates, and program execution facts so that arithmetic assumptions remain visible.
+
+`Program.PCRelocatable` checks that code uses only the original instructions.
+PC-only execution relocation requires this certificate: a call changes its saved
+link when moved, and an indirect jump carries a code address in a word. The
+symbolic assembler resolves direct-call labels; code with runtime calls must be
+verified against its final linked addresses. `run_conservative` proves that the
+original subset has exactly its original state, trace, cost, and stop behavior,
+without a code-size premise. `CallExamples.nested_correct` demonstrates nested
+runtime calls with charged RAM spills. Calls and indirect jumps each cost one
+and make no memory accesses themselves. Saved links wrap; invalid computed PCs
+fault on the following fetch.
 
 `BodyEmbedded` permits inlining a callee's continuing instructions while replacing
 its halts. `HaltsTo` checks that each halt becomes a jump to the caller's
@@ -414,6 +431,7 @@ The library's `Examples.randomRoundTrip_spec` proves the analogous program's beh
 | [Regions.lean](../WordRam/Regions.lean) | Fitting intervals, array assertions, separation, and memory agreement. |
 | [Blocks.lean](../WordRam/Blocks.lean) | Block composition, trace permissions, prefix locality, and fault exclusion. |
 | [Assembly.lean](../WordRam/Assembly.lean) | Symbolic labels, executable assembly, and execution-preserving relocation. |
+| [Calls.lean](../WordRam/Calls.lean) | Old-code conservativity and nested runtime-call examples. |
 | [Refinement.lean](../WordRam/Refinement.lean) | Inlined calls with charged continuation jumps and register preservation. |
 | [BoundedRetry.lean](../WordRam/BoundedRetry.lean) | Concrete bounded trial execution, stopping behavior, and consumed random addresses. |
 | [DeterministicSearch.lean](../WordRam/DeterministicSearch.lean) | Charged finite candidate enumeration without random reads. |

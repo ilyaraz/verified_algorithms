@@ -37,9 +37,27 @@ inductive Instr (R : Nat) where
   | rload (dst : Reg R) (addr : Operand R)
   | branch (cmp : Comparison) (x y : Operand R) (target : Nat)
   | jump (target : Nat)
+  | call (link : Reg R) (target : Nat)
+  | jumpReg (target : Operand R)
   | halt
   deriving DecidableEq, Repr
 
 abbrev Program (R : Nat) := Array (Instr R)
+
+/-- Instructions whose relocation needs only a change of PC. -/
+def Instr.pcRelocatable : Instr R → Bool
+  | .call _ _ | .jumpReg _ => false
+  | _ => true
+
+/-- A decidable certificate for the original instruction subset. -/
+def Program.PCRelocatable (p : Program R) : Prop := p.all Instr.pcRelocatable = true
+
+instance programPCRelocatableDecidable (p : Program R) : Decidable p.PCRelocatable := inferInstanceAs (Decidable (_ = _))
+
+theorem Program.PCRelocatable.fetch {p : Program R} {i : Instr R} {pc : Nat} (h : p.PCRelocatable) (hi : p[pc]? = some i) :
+    i.pcRelocatable = true := by
+  obtain ⟨hb, he⟩ := Array.getElem?_eq_some_iff.mp hi
+  rw [← he]
+  exact Array.all_eq_true.mp h pc hb
 
 end WordRam

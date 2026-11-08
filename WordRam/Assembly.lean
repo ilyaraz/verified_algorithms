@@ -8,6 +8,7 @@ namespace WordRam
 def Instr.relocate (base : Nat) : Instr R → Instr R
   | .branch c x y target => .branch c x y (base + target)
   | .jump target => .jump (base + target)
+  | .call link target => .call link (base + target)
   | i => i
 
 @[simp] theorem Instr.relocate_zero (i : Instr R) : i.relocate 0 = i := by
@@ -23,12 +24,14 @@ inductive Instruction (R : Nat) (Label : Type) where
   | emit (i : Instr R)
   | branch (c : Comparison) (x y : Operand R) (target : Label)
   | jump (target : Label)
+  | call (link : Reg R) (target : Label)
   deriving Repr
 
 def Instruction.resolve (labels : Label → Nat) : Instruction R Label → Instr R
   | .emit i => i
   | .branch c x y l => .branch c x y (labels l)
   | .jump l => .jump (labels l)
+  | .call link l => .call link (labels l)
 
 /-- Labels refer to instruction offsets, and emitted instructions are ordinary
 RAM instructions. Relocation also handles numeric targets in emitted code. -/
@@ -69,7 +72,7 @@ def labelsDefined : List (Item R Label) → List Label
 
 def Instruction.target : Instruction R Label → Option Label
   | .emit _ => none
-  | .branch _ _ _ l | .jump l => some l
+  | .branch _ _ _ l | .jump l | .call _ l => some l
 
 def Valid [DecidableEq Label] (source : List (Item R Label)) : Prop :=
   (labelsDefined source).Nodup ∧
@@ -105,24 +108,29 @@ theorem Embedded.append (leading p trailing : Program R) :
 variable {w R : Nat} {p q : Program R} {rho : RandomMemory w}
   {s t : State w R} {base : Nat}
 
-theorem Step.relocate (h : Step p rho s t event) (he : Embedded p q base) :
+theorem Step.relocate (h : Step p rho s t event) (he : Embedded p q base)
+    (hc : p.PCRelocatable := by decide) :
     Step q rho (s.relocate base) (t.relocate base) event := by
   unfold Step step at h ⊢
   cases hi : p[s.pc]? with
   | none => simp [hi] at h
   | some i =>
     rw [show (s.relocate base).pc = base + s.pc from rfl, he _ _ hi]
-    cases i <;> simp only [hi, StepResult.next.injEq] at h
+    have hsafe := hc.fetch hi
+    cases i <;> simp only [Instr.pcRelocatable, Bool.false_eq_true] at hsafe
+    all_goals try contradiction
+    all_goals simp only [hi, StepResult.next.injEq] at h
     all_goals try { cases h }
     all_goals rcases h with ⟨rfl, rfl⟩
     all_goals simp [Instr.relocate, State.relocate, State.put, Nat.add_assoc]
     split <;> rfl
 
-theorem Steps.relocate (h : Steps p rho k s t log) (he : Embedded p q base) :
+theorem Steps.relocate (h : Steps p rho k s t log) (he : Embedded p q base)
+    (hc : p.PCRelocatable := by decide) :
     Steps q rho k (s.relocate base) (t.relocate base) log := by
   induction h with
   | refl => exact .refl _
-  | cons hs ht ih => exact .cons (hs.relocate he) ih
+  | cons hs ht ih => exact .cons (hs.relocate he hc) ih
 
 theorem halt_relocate (h : step p rho s = .halt) (he : Embedded p q base) :
     step q rho (s.relocate base) = .halt := by
@@ -133,9 +141,10 @@ theorem halt_relocate (h : step p rho s = .halt) (he : Embedded p q base) :
     rw [show (s.relocate base).pc = base + s.pc from rfl, he _ _ hi]
     cases i <;> simp_all [Instr.relocate]
 
-theorem TerminatesIn.relocate (h : TerminatesIn p rho s k t log) (he : Embedded p q base) :
+theorem TerminatesIn.relocate (h : TerminatesIn p rho s k t log) (he : Embedded p q base)
+    (hc : p.PCRelocatable := by decide) :
     TerminatesIn q rho (s.relocate base) k (t.relocate base) log := by
   obtain ⟨n, hk, hs, ht⟩ := h
-  exact ⟨n, hk, hs.relocate he, halt_relocate ht he⟩
+  exact ⟨n, hk, hs.relocate he hc, halt_relocate ht he⟩
 
 end WordRam

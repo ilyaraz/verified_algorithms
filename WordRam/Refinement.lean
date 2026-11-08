@@ -18,7 +18,8 @@ theorem BodyEmbedded.of_check (p q : Program R) (base : Nat)
 variable {w R : Nat} {p q : Program R} {rho : RandomMemory w}
   {s t : State w R} {base : Nat} {r : Reg R}
 
-theorem Step.relocate_body (h : Step p rho s t event) (he : BodyEmbedded p q base) :
+theorem Step.relocate_body (h : Step p rho s t event) (he : BodyEmbedded p q base)
+    (hc : p.PCRelocatable := by decide) :
     Step q rho (s.relocate base) (t.relocate base) event := by
   unfold Step step at h ⊢
   cases hi : p[s.pc]? with
@@ -26,22 +27,26 @@ theorem Step.relocate_body (h : Step p rho s t event) (he : BodyEmbedded p q bas
   | some i =>
     have hn : i ≠ .halt := by intro hh; simp [hi,hh] at h
     rw [show (s.relocate base).pc = base+s.pc from rfl, he _ _ hi hn]
-    cases i <;> simp only [hi, StepResult.next.injEq] at h
+    have hsafe := hc.fetch hi
+    cases i <;> simp only [Instr.pcRelocatable, Bool.false_eq_true] at hsafe
+    all_goals try contradiction
+    all_goals simp only [hi, StepResult.next.injEq] at h
     all_goals try { cases h }
     all_goals rcases h with ⟨rfl,rfl⟩
     all_goals simp [Instr.relocate, State.relocate, State.put, Nat.add_assoc]
     split <;> rfl
 
-theorem Steps.relocate_body (h : Steps p rho k s t log) (he : BodyEmbedded p q base) :
+theorem Steps.relocate_body (h : Steps p rho k s t log) (he : BodyEmbedded p q base)
+    (hc : p.PCRelocatable := by decide) :
     Steps q rho k (s.relocate base) (t.relocate base) log := by
   induction h with
   | refl => exact .refl _
-  | cons hs ht ih => exact .cons (hs.relocate_body he) ih
+  | cons hs ht ih => exact .cons (hs.relocate_body he hc) ih
 
 /-- The only register possibly changed by an instruction. -/
 def Instr.destination : Instr R → Option (Reg R)
   | .mov r _ | .add r _ _ | .sub r _ _ | .mul r _ _ | .mod r _ _
-  | .shr r _ _ | .load r _ | .rload r _ => some r
+  | .shr r _ _ | .load r _ | .rload r _ | .call r _ => some r
   | _ => none
 
 theorem Step.register_frame (h : Step p rho s t event)
@@ -92,7 +97,8 @@ theorem halt_fetch (h : step p rho s = .halt) : p[s.pc]? = some .halt := by
 /-- Inlining a terminating callee charges the replacement jump exactly as its
 standalone halt and returns the same registers, ordinary memory, and trace. -/
 theorem TerminatesIn.call (h : TerminatesIn p rho s k t log)
-    (he : BodyEmbedded p q base) (hh : HaltsTo p q base continuation) :
+    (he : BodyEmbedded p q base) (hh : HaltsTo p q base continuation)
+    (hc : p.PCRelocatable := by decide) :
     Steps q rho k (s.relocate base) {t with pc := continuation} log := by
   obtain ⟨n,hk,hs,ht⟩ := h
   have hf := hh t.pc (halt_fetch ht)
@@ -102,7 +108,7 @@ theorem TerminatesIn.call (h : TerminatesIn p rho s k t log)
     rfl
   have hend : Steps q rho 1 (t.relocate base) {t with pc := continuation} [] :=
     .cons hj (.refl _)
-  simpa [hk] using (hs.relocate_body he).trans hend
+  simpa [hk] using (hs.relocate_body he hc).trans hend
 
 /-- A finite register-preservation check, reusable for each inlined routine. -/
 theorem register_preserved_of_check (p : Program R) (r : Reg R)

@@ -14,3 +14,4 @@ import WordRam.RandomBlocks
 import WordRam.BoundedRetry
 import WordRam.DeterministicSearch
 import WordRam.Footprint
+import WordRam.Calls

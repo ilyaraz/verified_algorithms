@@ -67,6 +67,9 @@ def step (p : Program R) (rho : RandomMemory w) (s : State w R) : StepResult w R
   | some (.branch cmp x y target) =>
       .next { s with pc := if cmp.test (val x) (val y) then target else s.pc + 1 } none
   | some (.jump target) => .next { s with pc := target } none
+  | some (.call link target) =>
+      .next { s with pc := target, regs := update s.regs link (word w (s.pc + 1)) } none
+  | some (.jumpReg target) => .next { s with pc := (val target).toNat } none
   | some .halt => .halt
 
 /-- A relation derived from the executable transition, not a second interpreter. -/

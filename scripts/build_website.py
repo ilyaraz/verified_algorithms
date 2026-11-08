@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
-WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Refinement", "BoundedRetry", "DeterministicSearch", "Footprint", "Arrays", "Random", "RandomBlocks", "Examples"]
+WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Calls", "Refinement", "BoundedRetry", "DeterministicSearch", "Footprint", "Arrays", "Random", "RandomBlocks", "Examples"]
 HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
                    "MultiplyShiftProbability", "MultiplyShiftRam", "MultiplyShiftRounding", "Examples"]
 DEDUP_MODULES = ["Specification", "Model", "Bounds", "Program", "Representation", "Insertion",

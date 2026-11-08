@@ -90,6 +90,7 @@ run_cmd do
       ``RunResult.randomFootprint, ``RunResult.randomBitsExposed,
       ``Examples.arithmetic, ``Examples.mulMod, ``Examples.randomRoundTrip,
       ``Examples.countdown, ``Examples.spin, ``Examples.branchExample,
+      ``Instr.pcRelocatable, ``Legacy.step, ``Legacy.run, ``CallExamples.nested,
       ``Instr.relocate, ``Assembly.Instruction.resolve, ``Assembly.assemble,
       ``Assembly.instructions, ``Assembly.labelOffset, ``Assembly.labelsDefined,
       ``Assembly.Instruction.target, ``Assembly.compile, ``State.relocate,
