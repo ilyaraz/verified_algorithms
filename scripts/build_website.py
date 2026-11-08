@@ -326,6 +326,16 @@ def main():
     # A classic script keeps file:// browsing functional, without fetch or a CDN.
     (OUT / "graph-data.js").write_text("window.LEAN_GRAPH = " + json.dumps(data, ensure_ascii=False).replace("</", "<\\/") + ";\n")
     render_sources()
+    contract = (ROOT / "docs/ramlang-contract.md").read_text()
+    (OUT / "ramlang.html").write_text(
+        '<!doctype html><html lang="en"><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<title>RamLang milestones · Lean Atlas</title>'
+        '<link rel="stylesheet" href="source.css">'
+        '<header><a href="index.html">← Lean Atlas</a>'
+        '<strong>Structured word-RAM language</strong></header>'
+        '<main><pre style="white-space:pre-wrap;line-height:1.7;max-width:90ch;margin:auto">'
+        + html.escape(contract) + '</pre></main></html>')
     print(f"Built {OUT}: {len(nodes)} declarations, {len(edges)} dependency edges, {len(FILES)} source modules.")
 
 
