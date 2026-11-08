@@ -3,6 +3,7 @@ import WordRam.Examples
 import DataStructures
 import DataStructures.PerfectHash.Examples
 import DataStructures.PerfectHash.Build.Examples
+import DataStructures.PerfectHash.Query.Examples
 import Hashing
 import Hashing.Examples
 import Probability
@@ -106,6 +107,10 @@ run_cmd do
       ``PerfectHash.Build.Model.rootSearch, ``PerfectHash.Build.Model.childSearch,
       ``PerfectHash.Build.Model.construct, ``PerfectHash.Build.Model.advance, ``PerfectHash.Build.Model.advanceMany,
       ``PerfectHash.Build.Model.position, ``PerfectHash.Build.Model.stored,
+      ``PerfectHash.Query.assembly, ``PerfectHash.Query.location, ``PerfectHash.Query.program,
+      ``PerfectHash.Query.cost, ``PerfectHash.Query.Examples.hashedMemory,
+      ``PerfectHash.Query.Examples.registers, ``PerfectHash.Query.Examples.execute,
+      ``PerfectHash.Query.Examples.emptyMemory, ``PerfectHash.Query.Examples.singletonMemory,
       ``StaticSet.registerCount, ``StaticSet.readDescriptor,
       ``PerfectHash.dictionaryCapacity, ``PerfectHash.workspaceCapacity,
       ``PerfectHash.bucketCapacity, ``PerfectHash.randomCapacity,

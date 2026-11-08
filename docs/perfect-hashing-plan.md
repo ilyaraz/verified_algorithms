@@ -401,6 +401,14 @@ Prove bucket partition/count lemmas, the energy identity, root acceptance probab
 
 ### M6 — Fix the representation and prove the query program
 
+**Implemented:** `Layout` and `Representation` define packed, disjoint header,
+directory, and occupancy/key regions with a retained-local representation.
+`Query/{Program,Correctness}` supplies a fixed 33-instruction program and the frozen
+`QuerySpec` at cost 33, including full-word membership, memory preservation, local
+reads, and no randomness. Overwrite locality and repeated-query preservation are
+proved independently of construction. See the
+[query and representation reference](perfect-hashing-query.md).
+
 **Dependencies:** M1–M2 and the layout bounds in M5. **Main risk:** sentinel errors, false positives, or retained dependence on scratch space.
 
 Define the header, directory, seed encoding, table slots, occupancy markers, and packed offsets. Prove region disjointness and a local representation predicate. Implement/query it with a fixed program and prove constant instruction count, membership equivalence, memory preservation, no random reads, and invariance under changes outside the retained representation.

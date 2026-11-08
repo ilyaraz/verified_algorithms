@@ -38,6 +38,26 @@ theorem Steps.frame_of_policy (h : Steps p rho k s t log)
   have := hp e he
   cases e <;> simp_all [Access.writeAddress, AccessPolicy.Allows]
 
+/-- Removing repeated addresses never introduces a new memory access. -/
+theorem eraseDups_subset {α : Type u} [BEq α] (xs : List α) : xs.eraseDups ⊆ xs := by
+  have loop : ∀ (ys acc : List α) (x : α),
+      x ∈ List.eraseDupsBy.loop (fun a b => a == b) ys acc → x ∈ ys ∨ x ∈ acc := by
+    intro ys
+    induction ys with
+    | nil => intro acc x hx; simpa [List.eraseDupsBy.loop] using hx
+    | cons y ys ih =>
+      intro acc x hx
+      cases he : acc.any (fun b => y == b)
+      · simp only [List.eraseDupsBy.loop, he] at hx
+        have hh := ih (y::acc) x hx
+        simpa only [List.mem_cons, or_assoc, or_left_comm] using hh
+      · simp only [List.eraseDupsBy.loop, he] at hx
+        have hh := ih acc x hx
+        exact hh.elim (fun h => Or.inl (by simp [h])) Or.inr
+  intro x hx
+  have hh := loop xs [] x hx
+  simpa using hh
+
 /-- A block has an explicit continuation state, charged continuing instructions,
 and an access policy. Halt is supplied by its continuation, not hidden in cost. -/
 def BlockSpec (p : Program R) (rho : RandomMemory w)

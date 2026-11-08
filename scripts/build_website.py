@@ -37,6 +37,11 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/PerfectHash/Build/Placement.lean"),
     Path("DataStructures/PerfectHash/Build/Instance.lean"),
     Path("DataStructures/PerfectHash/Build/Examples.lean"),
+    Path("DataStructures/PerfectHash/Layout.lean"),
+    Path("DataStructures/PerfectHash/Representation.lean"),
+    Path("DataStructures/PerfectHash/Query/Program.lean"),
+    Path("DataStructures/PerfectHash/Query/Correctness.lean"),
+    Path("DataStructures/PerfectHash/Query/Examples.lean"),
     Path("Checks.lean"),
 ]
 
