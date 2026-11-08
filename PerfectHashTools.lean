@@ -1,0 +1,2 @@
+import PerfectHashTools.Main
+import PerfectHashTools.Generated

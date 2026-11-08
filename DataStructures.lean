@@ -9,3 +9,4 @@ import DataStructures.PerfectHash.Query.Correctness
 import DataStructures.PerfectHash.Construction.Refinement
 import DataStructures.PerfectHash.Bounded.Interface
 import DataStructures.PerfectHash.Total.Contract
+import DataStructures.PerfectHash.Certified

@@ -110,13 +110,18 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/PerfectHash/Total/Selection.lean"),
     Path("DataStructures/PerfectHash/Total/Work.lean"),
     Path("DataStructures/PerfectHash/Total/WorstCase.lean"),
+    Path("DataStructures/PerfectHash/Certified.lean"),
+    Path("PerfectHashTools/Export.lean"),
+    Path("PerfectHashTools/Demo.lean"),
+    Path("PerfectHashTools/Main.lean"),
+    Path("PerfectHashTools/Generated.lean"),
     Path("Checks.lean"),
 ]
 
 
 def module_label(file):
     """Keep distinct labels for modules sharing a basename such as Specification."""
-    if file.parts[0] in {"Hashing", "Probability", "Algorithms"}:
+    if file.parts[0] in {"Hashing", "Probability", "Algorithms", "PerfectHashTools"}:
         return ".".join(file.with_suffix("").parts)
     if file.parts[0] == "DataStructures":
         return ".".join(file.with_suffix("").parts[1:])

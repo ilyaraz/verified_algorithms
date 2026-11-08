@@ -1,6 +1,7 @@
 import WordRam
 import WordRam.Examples
 import DataStructures
+import PerfectHashTools
 import DataStructures.PerfectHash.Examples
 import DataStructures.PerfectHash.Build.Examples
 import DataStructures.PerfectHash.Query.Examples
@@ -246,7 +247,13 @@ run_cmd do
       ``PerfectHash.Total.seedCount, ``PerfectHash.Total.candidate, ``PerfectHash.Total.bounds,
       ``PerfectHash.Total.Examples.fallbackKeys, ``PerfectHash.Total.Examples.execute,
       ``PerfectHash.Total.Examples.rootImage, ``PerfectHash.Total.Examples.emptyBudgetState,
-      ``PerfectHash.Total.Examples.checkRun] do
+      ``PerfectHash.Total.Examples.checkRun,
+      ``PerfectHash.fksCode, ``PerfectHash.Exported.preprocess, ``PerfectHash.Exported.query,
+      ``PerfectHash.Export.register, ``PerfectHash.Export.operand, ``PerfectHash.Export.comparison,
+      ``PerfectHash.Export.instruction, ``PerfectHash.Export.program, ``PerfectHash.Export.source,
+      ``PerfectHash.Export.write, ``PerfectHash.Demo.keys, ``PerfectHash.Demo.layout,
+      ``PerfectHash.Demo.memory, ``PerfectHash.Demo.initial, ``PerfectHash.Demo.built,
+      ``PerfectHash.Demo.query, ``PerfectHash.Demo.run, ``main] do
     let axioms ← Lean.collectAxioms name
     unless axioms.isEmpty do
       throwError "Executable definition {name} uses axioms: {axioms}"

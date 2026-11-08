@@ -463,6 +463,13 @@ Replace budget exhaustion by the verified exhaustive fallback, retaining the sam
 
 ### M10 — Package explicit witnesses and extraction interfaces
 
+**Implemented:** `PerfectHash.certifiedFKS` contains the explicit code and full
+contract, and `dictionary_algorithms_exist` follows directly from that value.
+`PerfectHashTools` supplies a checked small execution demo and deterministic
+Lean-source export. The generated literal arrays have kernel-checked equality
+proofs against the certified projections; regeneration checks detect drift. See
+the [certificate and export reference](perfect-hashing-export.md).
+
 **Dependencies:** M9; introduce the package type earlier if useful. **Main risk:** nonconstructive existence without executable programs.
 
 Build a concrete certified value containing the two program arrays, entry conventions, and a proof of the public contract. Derive the existential theorem directly from that value. Export the exact instruction arrays and a documented dictionary format. Add a small Lean execution/demo entry point and round-trip validation for any serializer introduced.
