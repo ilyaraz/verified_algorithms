@@ -16,7 +16,11 @@ SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
 WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Arrays", "Random", "Examples"]
+HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
+                   "MultiplyShiftProbability", "MultiplyShiftRam", "Examples"]
 FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
+    Path("Hashing") / f"{m}.lean" for m in HASHING_MODULES
+] + [
     Path("DataStructures/StaticSet/Specification.lean"),
     Path("DataStructures/PerfectHash/Admissibility.lean"),
     Path("DataStructures/PerfectHash/Specification.lean"),
@@ -27,6 +31,8 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
 
 def module_label(file):
     """Keep distinct labels for modules sharing a basename such as Specification."""
+    if file.parts[0] == "Hashing":
+        return ".".join(file.with_suffix("").parts)
     if file.parts[0] == "DataStructures":
         return ".".join(file.with_suffix("").parts[1:])
     return file.stem

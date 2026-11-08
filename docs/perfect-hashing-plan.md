@@ -338,6 +338,12 @@ Add the chosen right-shift semantics and re-establish existing machine theorems.
 
 ### M2 — Prove and implement the hash family
 
+**Implemented:** `Hashing` supplies the finite collision interface, a full-word
+multiply-shift collision proof with constant two, exact two-to-one sampling and
+random-cell law transfer, odd-seed enumeration, and fixed RAM evaluator/sampler
+programs. The evaluator costs three instructions and the sampler four, including
+halt; both have empty memory traces. See the [hashing reference](hashing.md).
+
 **Dependencies:** M0; the RAM evaluator uses M1. **Main risk:** conflating arithmetic or distribution assumptions.
 
 Define the mathematical collision interface and raw-word sampler interface. Prove multiply-shift's range, odd-seed law, collision bound, seed enumeration, and runtime encoding. Supply a fixed RAM evaluator and its constant-cost theorem. Isolate generic modular arithmetic and power-of-two rounding lemmas that have independent uses.
