@@ -104,19 +104,19 @@ theorem Returns.observed (h : Returns p rho cap s value t trace) :
 
 /-- Every ideal prefix whose allocations fit also runs with finite capacity. -/
 theorem Steps.capacity (h : Steps p rho none n s t log)
-    (fits : ∀ k u trace, Steps p rho none k s u trace → FitsNext p cap u) :
+    (fits : ∀ k u trace, k < n → Steps p rho none k s u trace → FitsNext p cap u) :
     Steps p rho (some cap) n s t log := by
   induction h with
   | refl => exact .refl _
   | @cons s t event n u log hs ht ih =>
     have first : Step p rho (some cap) s t event := by
       unfold Step
-      rw [step_ideal_of_fits (fits 0 s [] (.refl s))]
+      rw [step_ideal_of_fits (fits 0 s [] (by omega) (.refl s))]
       exact hs
     apply Steps.cons first
     apply ih
-    intro k v trace hv
-    exact fits (k+1) v (event.toList++trace) (.cons hs hv)
+    intro k v trace hk hv
+    exact fits (k+1) v (event.toList++trace) (by omega) (.cons hs hv)
 
 /-- A bounded-stack infinite loop is divergence, not stack exhaustion. -/
 def Diverges (p : Program) (rho : RandomMemory w) (cap : Option Nat) (s : Config w) : Prop :=

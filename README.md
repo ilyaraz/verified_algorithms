@@ -88,4 +88,6 @@ The alternative [structured word-RAM development](docs/ramlang-contract.md)
 adds an independent recursive source language under `RamLang/`. Its milestone
 ledger distinguishes implemented semantics from the remaining compiler proofs
 and separate perfect-hashing source integration. Import `RamLang` for the
-checked core, source evaluator, and recursive examples.
+checked core, source evaluator, deterministic recursive compiler, and examples.
+The compiler has execution fixtures and proved code sizes; its general
+correctness/resource theorem is the next milestone.

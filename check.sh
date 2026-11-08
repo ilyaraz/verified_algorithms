@@ -5,6 +5,9 @@ cd "$task_root"
 ./lake build
 # Run the audit even when the build target is already cached.
 ./lake env lean Checks.lean
+# Recheck source and compiled recursion/capacity fixtures with cached artifacts.
+./lake env lean RamLang/Examples.lean
+./lake env lean RamLang/Compiler/Examples.lean
 # Reexecute integration fixtures even when their compiled modules are cached.
 ./lake env lean -s 131072 DataStructures/PerfectHash/Total/Examples.lean
 scripts/check_exports.sh

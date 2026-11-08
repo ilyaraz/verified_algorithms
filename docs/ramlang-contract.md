@@ -154,7 +154,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L0 semantics and ABI | complete: this contract |
 | L1 ISA and compatibility | complete: `WordRam/Calls.lean`, checked relocation subset |
 | L2 independent source semantics | complete: checker, source steps/evaluator, ideal-capacity correspondence, recursion examples |
-| L3 recursive compiler | pending |
+| L3 recursive compiler | complete: deterministic two-pass compilation, frame/code metadata, boundary executions |
 | L4 simulation and resources | pending |
 | L5 source logic | pending |
 | L6 DSL and generic routines | pending |
@@ -167,3 +167,30 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 After each completed milestone: run its checks, regenerate the Atlas with all
 new declarations and explanations, commit and push, and publish the existing
 ChatGPT Site while preserving its audience.
+
+## L3 executable compiler interface
+
+`RamLang.Compiler.compile` checks the source and returns an executable instruction
+array plus function ranges and frame sizes. `lower_length`, `wrapper_length`,
+`bodies_length`, `compile_function_count`, and `compile_code_size` prove finite
+output sizes. `CompiledProgram.Fits` states code/frame representability; it is an
+execution precondition, not a width-dependent compiler input. `report` displays
+the resulting instruction and frame counts. No executable definition depends on
+proof axioms.
+
+The compiler emits arguments directly into the checked new frame while retaining
+the old frame pointer. Core arguments are already atoms; future rich-expression
+lowering evaluates them into caller-owned temporaries first. Function bodies are
+emitted once, including self-recursive and mutually recursive bodies. The linker
+uses final absolute addresses and never applies PC-only relocation to calls.
+
+The kernel-checked L3 fixtures cover dirty memory, live locals, recursion, early
+return, entry exhaustion, exact-fit capacity, one-word-short capacity, and reuse
+of released frames. The sum example has 65 code instructions and five-word
+frames. Input 4 returns 10 in 197 instructions using a 25-word stack; capacity 24
+instead reports runtime exhaustion after 108 instructions without accessing an
+out-of-reservation word. Two sequential calls reuse a 30-word reservation and
+return 20 in 423 instructions. These finite executions and code-size proofs do
+**not** constitute the general state/trace/resource simulation required by L4.
+The source logic, C-like DSL, and alternative perfect-hashing proofs remain
+subsequent milestones.

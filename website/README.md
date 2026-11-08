@@ -105,3 +105,8 @@ RamLang modules have distinct `RamLang.*` labels and import only the reusable
 machine library. Search for `RamLang.step_ideal_of_fits` and
 `RamLang.Examples.spin_diverges` to inspect source semantics and capacity proofs.
 The ledger explicitly separates completed milestones from remaining work.
+
+For the executable baseline compiler, inspect `RamLang.Compiler.compile`,
+`RamLang.Compiler.compile_code_size`, and `RamLang.Compiler.Examples.sum_exact_fit`.
+The code-size theorem and finite examples do not claim the remaining general
+compiler state/trace/resource simulation.
