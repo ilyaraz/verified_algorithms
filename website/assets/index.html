@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive map of the Word RAM Lean formalization, with plain-language descriptions and exact source links.">
+  <title>Word RAM · Lean Atlas</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="graph-data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="index.html" aria-label="Lean Atlas home"><span class="brand-mark" aria-hidden="true">λ<span></span></span><span>Lean Atlas<small>VERIFIABLE ALGORITHMS</small></span></a>
+    <div class="project-title"><span class="status-dot"></span> Word RAM <span class="separator">/</span> Library explorer</div>
+    <button id="about-button" class="quiet-button">About this map <span aria-hidden="true">↗</span></button>
+  </header>
+  <main class="shell">
+    <aside class="library" aria-label="Declaration index">
+      <div class="library-heading"><h2>Library index</h2><span id="index-count" class="count"></span></div>
+      <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search declarations…" aria-label="Search declaration index" autocomplete="off"><kbd>/</kbd></label>
+      <div class="kind-filters" aria-label="Declaration kinds"><button data-kind="all" aria-pressed="true">All</button><button data-kind="definition" aria-pressed="false"><i class="def-dot"></i> Definitions</button><button data-kind="statement" aria-pressed="false"><i class="thm-dot"></i> Statements</button></div>
+      <div id="declaration-list" class="declaration-list"></div>
+      <footer class="library-footer"><span class="status-dot"></span> Lean 4.24.0 <span>·</span> Static & offline</footer>
+    </aside>
+    <section class="workspace" aria-labelledby="page-title">
+      <div class="intro"><div><p class="eyebrow">THE FORMAL MODEL, CONNECTED</p><h1 id="page-title">From words to guarantees.</h1><p>Explore what’s defined, what’s proved, and how it fits together.</p></div><div class="stats"><div><strong id="definition-count"></strong><span>definitions</span></div><div><strong id="statement-count"></strong><span>statements</span></div></div></div>
+      <div class="graph-toolbar">
+        <div class="view-switch" aria-label="Graph view"><button id="focus-view" aria-pressed="true">Neighborhood</button><button id="all-view" aria-pressed="false">Entire library</button></div>
+        <label class="module-select"><span>Module</span><select id="module-filter" aria-label="Filter graph by module"><option value="">All modules</option></select></label>
+      </div>
+      <div class="graph-panel">
+        <div class="graph-caption"><span id="graph-title">Dependency diagram</span><span id="graph-count" aria-live="polite"></span></div>
+        <svg id="graph" aria-label="Interactive declaration dependency graph" role="group"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a5b1bd"/></marker><marker id="arrow-active" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#367c70"/></marker></defs><g id="viewport"><g id="edges"></g><g id="nodes"></g></g></svg>
+        <p id="empty-graph" class="empty-graph" hidden>No declarations match these filters.</p>
+        <div class="graph-legend"><span><i class="def-dot"></i> Definition</span><span><i class="thm-dot"></i> Statement</span><span class="edge-legend">Dependency <b>⟶</b> Uses it</span></div>
+        <div class="zoom-controls"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-level">100%</span><button id="zoom-in" aria-label="Zoom in">+</button><button id="fit" aria-label="Fit graph to view" title="Fit graph to view">⛶</button></div>
+      </div>
+      <div class="graph-footnote"><span>Drag to pan · scroll to zoom · select a node to explore</span><button id="reset" class="text-button">Reset view ↺</button></div>
+      <div class="reading-note"><span class="note-icon" aria-hidden="true">↗</span><div><strong>Follow the reasoning.</strong><p>Arrows lead from a dependency to the declaration that uses it. Select any definition or statement to read its meaning and jump to the Lean source.</p></div></div>
+    </section>
+    <aside id="inspector" class="inspector" aria-label="Selected declaration" aria-live="polite"></aside>
+  </main>
+  <dialog id="about"><form method="dialog"><button class="dialog-close" aria-label="Close about dialog">×</button></form><p class="eyebrow">HOW TO READ THE ATLAS</p><h2>The library, at declaration level.</h2><p>Every authored definition and statement in the nine project source modules is included, along with private helpers and unnamed examples. Definitions include types, structures, instances, and predicates. Statements include theorems and example proofs.</p><p>Dependencies come from references in Lean’s elaborated types and definition or proof bodies. Constructors, fields, recursors, and generated helpers are grouped into their owning declaration. Lean, Std, and Mathlib internals are omitted.</p><p>The graph shows elaborated references, not every name that occurs in tactic text. An arrow means “is used by”; it does not imply that a dependency is logically indispensable. Natural-language descriptions are explanatory; the Lean source is authoritative.</p><p>Use <strong>Entire library</strong> for the complete diagram, or <strong>Neighborhood</strong> for direct dependencies and users of the selected entry. Search filters the index. Kind and module filters also restrict the diagram; hidden neighbors are still available in the details panel.</p><p>Source links open a line-numbered snapshot of the exact <code>.lean</code> files used to build this atlas. Every source page also offers the original file for download.</p><a href="graph.json" download class="source-link">Download graph data ↗</a></dialog>
+  <noscript>This interactive atlas needs JavaScript. The line-numbered source pages are available under source/.</noscript>
+</body>
+</html>

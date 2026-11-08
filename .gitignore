@@ -2,3 +2,5 @@
 .toolchain/
 .downloads/
 Scratch.lean
+website/dist/
+__pycache__/

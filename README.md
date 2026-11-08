@@ -6,6 +6,18 @@ The library supplies an executable interpreter, exact execution relations, cost 
 
 Read the [word RAM reference](docs/word-ram.md) for the complete machine definition, instruction set, probability semantics, theorem guide, and examples.
 
+The [Lean Atlas website](website/README.md) provides an interactive dependency diagram,
+plain-language descriptions of every authored definition and statement, and links to
+line-numbered Lean source. Build it after bootstrap with:
+
+```sh
+python3 scripts/build_website.py
+```
+
+Open `website/dist/index.html` directly in a browser, or serve `website/dist/` with
+any static web server. No JavaScript packages or external services are needed to
+build or browse the atlas.
+
 On Linux x86-64, bootstrap the pinned Lean 4.24.0 toolchain and Mathlib dependencies, then build and check:
 
 ```sh
