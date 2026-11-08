@@ -417,6 +417,12 @@ Define the header, directory, seed encoding, table slots, occupancy markers, and
 
 ### M7 — Verify individual construction blocks and trials
 
+**Implemented:** deterministic RAM root and child trials, dirty-memory clearing,
+overflow-safe energy guards, child allocation, and odd-seed enumeration. Concrete
+acceptance predicates equal M5's predicates; actual instruction bounds include
+rejected trials and local access policies. See the
+[construction-trial reference](perfect-hashing-trials.md).
+
 **Dependencies:** M1–M2, M5–M6. **Main risk:** costs or overflow on unsuccessful trials.
 
 Verify root directory clearing, one-pass grouping, capped energy accumulation, accepted-root layout allocation, child clearing/insertion, and status reporting. Relate each block to the abstract state machine with costs and local reads/writes. Account for dirty memory, early rejection, partially built tables, and successful siblings on a child rejection. Include seed enumeration as a verified loop using the family interface.

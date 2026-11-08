@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
-WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Arrays", "Random", "RandomBlocks", "Examples"]
+WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Refinement", "Arrays", "Random", "RandomBlocks", "Examples"]
 HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
                    "MultiplyShiftProbability", "MultiplyShiftRam", "MultiplyShiftRounding", "Examples"]
 DEDUP_MODULES = ["Specification", "Model", "Bounds", "Program", "Representation", "Insertion",
@@ -42,6 +42,28 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/PerfectHash/Query/Program.lean"),
     Path("DataStructures/PerfectHash/Query/Correctness.lean"),
     Path("DataStructures/PerfectHash/Query/Examples.lean"),
+    Path("DataStructures/PerfectHash/Construction/Allocation.lean"),
+    Path("DataStructures/PerfectHash/Construction/AllocationBlocks.lean"),
+    Path("DataStructures/PerfectHash/Construction/AllocationProgram.lean"),
+    Path("DataStructures/PerfectHash/Construction/ChildBlocks.lean"),
+    Path("DataStructures/PerfectHash/Construction/ChildInitialization.lean"),
+    Path("DataStructures/PerfectHash/Construction/ChildLoop.lean"),
+    Path("DataStructures/PerfectHash/Construction/ChildProgram.lean"),
+    Path("DataStructures/PerfectHash/Construction/ChildRound.lean"),
+    Path("DataStructures/PerfectHash/Construction/Clear.lean"),
+    Path("DataStructures/PerfectHash/Construction/Energy.lean"),
+    Path("DataStructures/PerfectHash/Construction/Enumeration.lean"),
+    Path("DataStructures/PerfectHash/Construction/Examples.lean"),
+    Path("DataStructures/PerfectHash/Construction/Grouping.lean"),
+    Path("DataStructures/PerfectHash/Construction/Refinement.lean"),
+    Path("DataStructures/PerfectHash/Construction/Registers.lean"),
+    Path("DataStructures/PerfectHash/Construction/RootBlocks.lean"),
+    Path("DataStructures/PerfectHash/Construction/RootInitialization.lean"),
+    Path("DataStructures/PerfectHash/Construction/RootLoop.lean"),
+    Path("DataStructures/PerfectHash/Construction/RootProgram.lean"),
+    Path("DataStructures/PerfectHash/Construction/RootRound.lean"),
+    Path("DataStructures/PerfectHash/Construction/Round.lean"),
+    Path("DataStructures/PerfectHash/Construction/Slots.lean"),
     Path("Checks.lean"),
 ]
 

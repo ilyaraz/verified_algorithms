@@ -8,5 +8,6 @@ import WordRam.Random
 import WordRam.Regions
 import WordRam.Blocks
 import WordRam.Assembly
+import WordRam.Refinement
 import WordRam.Arrays
 import WordRam.RandomBlocks
