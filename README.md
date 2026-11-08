@@ -15,6 +15,11 @@ overwriting all unretained memory. The [completed M0–M11 plan](docs/perfect-ha
 and [audit guide](docs/perfect-hashing-audit.md) explain the proof structure and
 verification coverage.
 
+The [paper (PDF)](docs/perfect-hashing-paper.pdf) gives a compact existence
+theorem with the necessary definitions, explicit resource bounds, and probability
+guarantees. Its [LaTeX source](docs/perfect-hashing-paper.tex) can be rebuilt with
+`./scripts/build_paper.sh` using Tectonic, latexmk, or pdflatex.
+
 ```lean
 import DataStructures.PerfectHash.Certified
 
