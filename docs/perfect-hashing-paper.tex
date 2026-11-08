@@ -18,7 +18,7 @@
 \newcommand{\Prb}{\mathbb P}
 \newcommand{\W}{\mathcal W_w}
 \newcommand{\code}[1]{\nolinkurl{#1}}
-\newcommand{\src}[2]{\href{https://github.com/ilyaraz/verified_algorithms/blob/f67e943/#1}{#2}}
+\newcommand{\src}[3]{\href{https://github.com/ilyaraz/verified_algorithms/blob/f67e943886482e132334af0f922f24dd58bb4cdc/#1\#L#2}{#3}}
 \setlength{\parskip}{0.3em}
 \setlength{\emergencystretch}{2em}
 \setlist[enumerate]{itemsep=0.45em,topsep=0.4em}
@@ -41,7 +41,7 @@ We give only the definitions needed to state the complete implementation
 guarantee, including finite memory capacity, the probability space, worst-case
 resources, and the explicit probability bound for deterministic fallback.
 The existence claim is witnessed by the completed Lean certificate
-\code{PerfectHash.certifiedFKS}; preprocessing bounds count executed RAM
+\src{DataStructures/PerfectHash/Certified.lean}{14}{\code{PerfectHash.certifiedFKS}}; preprocessing bounds count executed RAM
 instructions through successful halt.
 \end{abstract}
 
@@ -228,19 +228,19 @@ words are read in expectation.
 \section{Why the concrete witness satisfies the statement}
 
 \paragraph{Witness and refinement.}
-Take $P$ to be \code{PerfectHash.Total.program} and
-$Q$ to be \code{PerfectHash.Query.program}. The theorem
-\code{PerfectHash.fksCode_correct} proves their complete
-\code{DictionarySpec} with constants $(10000,33,10000)$ and the packed
-representation \code{PerfectHash.Table.representation}.
-The value \code{PerfectHash.certifiedFKS} packages these arrays and this
-proof; \code{PerfectHash.dictionary_algorithms_exist} derives the existential
+Take $P$ to be \src{DataStructures/PerfectHash/Total/Program.lean}{19}{\code{PerfectHash.Total.program}} and
+$Q$ to be \src{DataStructures/PerfectHash/Query/Program.lean}{70}{\code{PerfectHash.Query.program}}. The theorem
+\src{DataStructures/PerfectHash/Certified.lean}{10}{\code{PerfectHash.fksCode_correct}} proves their complete
+\src{DataStructures/PerfectHash/Specification.lean}{85}{\code{DictionarySpec}} with constants $(10000,33,10000)$ and the packed
+representation \src{DataStructures/PerfectHash/Representation.lean}{162}{\code{PerfectHash.Table.representation}}.
+The value \src{DataStructures/PerfectHash/Certified.lean}{14}{\code{PerfectHash.certifiedFKS}} packages these arrays and this
+proof; \src{DataStructures/PerfectHash/Certified.lean}{21}{\code{PerfectHash.dictionary_algorithms_exist}} derives the existential
 statement from that value. The arrays are executable data, independent of
 width and input, and are not extracted from a choice of successful seeds.
 
 The public contract gives construction, time, space, randomness resources,
 and queries after overwriting unretained memory. The implementation-specific
-\code{PerfectHash.Total.fallback_probability} supplies the additional
+\src{DataStructures/PerfectHash/Total/FallbackProbability.lean}{75}{\code{PerfectHash.Total.fallback_probability}} supplies the additional
 bound on $F$. The following explains the mathematical ingredients, rather
 than introducing further prerequisites for the statement.
 
@@ -263,7 +263,7 @@ The four-word header, four words per bucket, and two words per slot account
 for the entire retained region. Occupancy is stored separately from the key,
 so all word values are usable as keys.
 
-The packed representation's \code{Table.Valid.contents} condition says that
+The packed representation's \src{DataStructures/PerfectHash/Representation.lean}{35}{\code{Table.Valid.contents}} condition says that
 a selected slot contains a key exactly when that key belongs to the specified
 bucket and set. If two members selected the same slot, its single stored
 value would equal both, proving injectivity. Disjoint child arrays give
@@ -317,8 +317,9 @@ This statement describes the completed M11 implementation at repository
 revision \code{f67e943}, not an open implementation specification.
 The project pins Lean 4.24.0 and Mathlib revision
 \code{f897ebcf72cd16f89ab4577d0c826cd14afaafc7}.
-The following source links identify the proof boundaries; theorem names
-in the middle rows are in \code{PerfectHash.Total}.
+Source links target declaration lines in this fixed revision, so later edits
+do not move their targets. Theorem names in the middle rows are in
+\code{PerfectHash.Total}.
 
 \begin{center}\small
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.29\linewidth}
@@ -327,35 +328,35 @@ in the middle rows are in \code{PerfectHash.Total}.
 Claim & Checked source and entry point\\
 \midrule
 Capacity and calling assumptions &
-\src{DataStructures/PerfectHash/Admissibility.lean}{Admissibility.lean}:
-\code{Admissible}, \code{canonical_admissible}.\\
+\src{DataStructures/PerfectHash/Admissibility.lean}{56}{Admissibility.lean}:
+\src{DataStructures/PerfectHash/Admissibility.lean}{56}{\code{Admissible}}, \src{DataStructures/PerfectHash/Admissibility.lean}{104}{\code{canonical_admissible}}.\\
 Complete machine contract &
-\src{DataStructures/PerfectHash/Total/Contract.lean}{Total/Contract.lean}:
-\code{specification}.\\
+\src{DataStructures/PerfectHash/Total/Contract.lean}{31}{Total/Contract.lean}:
+\src{DataStructures/PerfectHash/Total/Contract.lean}{31}{\code{specification}}.\\
 Every-image output and access &
-\src{DataStructures/PerfectHash/Total/Interface.lean}{Total/Interface.lean}:
-\code{output}, \code{prefix_access}.\\
+\src{DataStructures/PerfectHash/Total/Interface.lean}{34}{Total/Interface.lean}:
+\src{DataStructures/PerfectHash/Total/Interface.lean}{34}{\code{output}}, \src{DataStructures/PerfectHash/Total/Interface.lean}{59}{\code{prefix_access}}.\\
 Expected and worst-case time &
-\src{DataStructures/PerfectHash/Total/Expected.lean}{Total/Expected.lean}:
-\code{expected_instructions};
-\src{DataStructures/PerfectHash/Total/WorstCase.lean}{Total/WorstCase.lean}:
-\code{work_le_worst}.\\
+\src{DataStructures/PerfectHash/Total/Expected.lean}{41}{Total/Expected.lean}:
+\src{DataStructures/PerfectHash/Total/Expected.lean}{41}{\code{expected_instructions}};
+\src{DataStructures/PerfectHash/Total/WorstCase.lean}{57}{Total/WorstCase.lean}:
+\src{DataStructures/PerfectHash/Total/WorstCase.lean}{57}{\code{work_le_worst}}.\\
 Expected randomness &
-\src{DataStructures/PerfectHash/Total/ExpectedRandom.lean}{Total/ExpectedRandom.lean}:
-\code{expected_random_reads}, \code{expected_exposed_bits}.\\
+\src{DataStructures/PerfectHash/Total/ExpectedRandom.lean}{78}{Total/ExpectedRandom.lean}:
+\src{DataStructures/PerfectHash/Total/ExpectedRandom.lean}{78}{\code{expected_random_reads}}, \src{DataStructures/PerfectHash/Total/ExpectedRandom.lean}{90}{\code{expected_exposed_bits}}.\\
 Fallback probability &
-\src{DataStructures/PerfectHash/Total/FallbackProbability.lean}{Total/FallbackProbability.lean}:
-\code{fallback_probability}.\\
+\src{DataStructures/PerfectHash/Total/FallbackProbability.lean}{75}{Total/FallbackProbability.lean}:
+\src{DataStructures/PerfectHash/Total/FallbackProbability.lean}{75}{\code{fallback_probability}}.\\
 Local perfect representation &
-\src{DataStructures/PerfectHash/Representation.lean}{Representation.lean}:
-\code{Table.Valid}, \code{Table.View}, \code{Table.representation}.\\
+\src{DataStructures/PerfectHash/Representation.lean}{30}{Representation.lean}:
+\src{DataStructures/PerfectHash/Representation.lean}{30}{\code{Table.Valid}}, \src{DataStructures/PerfectHash/Representation.lean}{40}{\code{Table.View}}, \src{DataStructures/PerfectHash/Representation.lean}{162}{\code{Table.representation}}.\\
 Query correctness &
-\src{DataStructures/PerfectHash/Query/Correctness.lean}{Query/Correctness.lean}:
-\code{PerfectHash.Query.spec}.\\
+\src{DataStructures/PerfectHash/Query/Correctness.lean}{132}{Query/Correctness.lean}:
+\src{DataStructures/PerfectHash/Query/Correctness.lean}{132}{\code{PerfectHash.Query.spec}}.\\
 Concrete existential witness &
-\src{DataStructures/PerfectHash/Certified.lean}{Certified.lean}:
-\code{PerfectHash.certifiedFKS},
-\code{PerfectHash.dictionary_algorithms_exist}.\\
+\src{DataStructures/PerfectHash/Certified.lean}{10}{Certified.lean}:
+\src{DataStructures/PerfectHash/Certified.lean}{14}{\code{PerfectHash.certifiedFKS}},
+\src{DataStructures/PerfectHash/Certified.lean}{21}{\code{PerfectHash.dictionary_algorithms_exist}}.\\
 \bottomrule
 \end{tabular}
 \end{center}
