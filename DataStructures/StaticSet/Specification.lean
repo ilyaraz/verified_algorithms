@@ -1,4 +1,5 @@
 import WordRam.Random
+import WordRam.Regions
 import Mathlib.Data.Finset.Card
 
 /-! Public, construction-independent static membership semantics. No dictionary
@@ -14,30 +15,12 @@ structure DictionaryCode where
   preprocess : Program registerCount
   query : Program registerCount
 
-/-- Half-open natural-number address interval, before conversion to machine words. -/
-structure Region where
-  base : Nat
-  size : Nat
-  deriving DecidableEq, Repr
-
-/-- The strict endpoint convention leaves the one-past-end address representable. -/
-def Region.Fits (r : Region) (w : Nat) : Prop := r.base + r.size < modulus w
-
-/-- Membership is tested without wrapping either endpoint. -/
-def Region.Contains (r : Region) (a : Addr w) : Prop :=
-  r.base ≤ a.toNat ∧ a.toNat < r.base + r.size
-
-/-- Sufficient disjointness, also allowing adjacent or empty regions. -/
-def Region.Separated (r s : Region) : Prop :=
-  r.base + r.size ≤ s.base ∨ s.base + s.size ≤ r.base
-
-/-- Two memories have the same contents throughout a retained region. -/
-def AgreeOn (r : Region) (mem mem' : DataMemory w) : Prop :=
-  ∀ a, r.Contains a → mem a = mem' a
-
-/-- The input array is the occurrence list, including repetitions. Fit is separate. -/
-def ArrayAt (mem : DataMemory w) (base : Nat) (xs : List (Word w)) : Prop :=
-  ∀ i : Fin xs.length, mem (word w (base + i.val)) = xs[i]
+/- Compatibility names for the reusable M1 memory assertions. Their definitions
+and strict endpoint policy are unchanged from M0. -/
+export WordRam (Region AgreeOn ArrayAt)
+namespace Region
+export WordRam.Region (Fits Contains Separated)
+end Region
 
 /-- Distinct count is a specification object, never preprocessing advice. -/
 def distinctCount (xs : List (Word w)) : Nat := xs.toFinset.card

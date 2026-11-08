@@ -5,3 +5,7 @@ import WordRam.Machine
 import WordRam.Execution
 import WordRam.Properties
 import WordRam.Random
+import WordRam.Regions
+import WordRam.Blocks
+import WordRam.Assembly
+import WordRam.Arrays

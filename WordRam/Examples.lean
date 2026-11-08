@@ -1,4 +1,4 @@
-import WordRam.Properties
+import WordRam.Arrays
 
 /-! Small assembly programs, with kernel-checked boundary cases. -/
 namespace WordRam.Examples
@@ -144,5 +144,77 @@ theorem exhausted_keeps_store :
 
 theorem zero_width :
     (run arithmetic (zeroMemory 0) 6 (State.zero 0 1)).state.regs 0 = word 0 0 := by decide
+
+def shiftAlias : Program 2 := #[
+  .shr r0 (.reg r1) (.reg r0), .halt]
+
+theorem shift_old_operands (rho : RandomMemory w) (rs : Registers w 2) (mem : DataMemory w) :
+    let result := run shiftAlias rho 2 (.initial rs mem)
+    result.state.regs r0 = unsignedShiftRight (rs r1) (rs r0) ∧
+    result.state.regs r1 = rs r1 ∧ result.state.mem = mem ∧
+    result.trace = [] ∧ result.steps = 2 ∧ result.reason = .halted := by
+  simp [shiftAlias, run, step, State.initial, State.put, Operand.eval, RunResult.prepend,
+    update, r0, r1]
+
+theorem shift_boundaries :
+    unsignedShiftRight (word 8 255) (word 8 0) = word 8 255 ∧
+    unsignedShiftRight (word 8 255) (word 8 7) = word 8 1 ∧
+    unsignedShiftRight (word 8 255) (word 8 8) = word 8 0 ∧
+    unsignedShiftRight (word 8 255) (word 8 255) = word 8 0 ∧
+    unsignedShiftRight (word 0 0) (word 0 0) = word 0 0 := by decide
+
+/-- At width four, cell fourteen is the final accessible cell of this strict-fit
+region. Both initial destination memory and the temporary register are dirty. -/
+def arrayBoundaryState : State 4 4 := .initial
+  (fun r => word 4 (if r.val = 0 then 3 else if r.val = 1 then 12
+    else if r.val = 2 then 3 else 9))
+  (fun a => a + word 4 7)
+
+theorem array_copy_boundary :
+    let result := run (Arrays.program .copy) (zeroMemory 4) 23 arrayBoundaryState
+    result.reason = .halted ∧ result.steps = 23 ∧ result.randomReads = 0 ∧
+    result.state.mem (word 4 12) = word 4 10 ∧
+    result.state.mem (word 4 13) = word 4 11 ∧
+    result.state.mem (word 4 14) = word 4 12 ∧
+    result.state.mem (word 4 15) = word 4 6 ∧
+    result.state.mem (word 4 3) = word 4 10 := by decide
+
+theorem array_fill_boundary :
+    let result := run (Arrays.program .fill) (zeroMemory 4) 23 arrayBoundaryState
+    result.reason = .halted ∧ result.steps = 23 ∧
+    result.state.mem (word 4 12) = word 4 9 ∧
+    result.state.mem (word 4 14) = word 4 9 ∧
+    result.state.mem (word 4 15) = word 4 6 := by decide
+
+theorem array_visit_boundary :
+    let result := run (Arrays.program .visit) (zeroMemory 4) 23 arrayBoundaryState
+    result.reason = .halted ∧ result.steps = 23 ∧ result.writeFootprint = [] ∧
+    result.state.regs Arrays.value = word 4 12 := by decide
+
+theorem array_empty_dirty :
+    let initial := { arrayBoundaryState with
+      regs := update arrayBoundaryState.regs Arrays.remaining (word 4 0) }
+    let result := run (Arrays.program .copy) (zeroMemory 4) 2 initial
+    result.reason = .halted ∧ result.steps = 2 ∧ result.trace = [] := by decide
+
+theorem array_partial_store :
+    let result := run (Arrays.program .copy) (zeroMemory 4) 3 arrayBoundaryState
+    result.reason = .fuelExhausted ∧ result.steps = 3 ∧
+    result.state.mem (word 4 12) = word 4 10 ∧ result.writeFootprint = [word 4 12] := by decide
+
+theorem assembly_missing_rejected :
+    Assembly.compile 0 ([.instruction (.jump Arrays.Label.done)] :
+      List (Assembly.Item 4 Arrays.Label)) = none := by decide
+
+theorem assembly_duplicate_rejected :
+    Assembly.compile 0 ([.label Arrays.Label.loop, .label .loop, .instruction (.emit .halt)] :
+      List (Assembly.Item 4 Arrays.Label)) = none := by decide
+
+theorem array_relocated :
+    let leading : Program 4 := #[.jump 1]
+    let p := leading ++ (Arrays.program .copy).map (Instr.relocate 1) ++ #[.halt]
+    let result := run p (zeroMemory 4) 24 arrayBoundaryState
+    result.reason = .halted ∧ result.steps = 24 ∧
+    result.state.mem (word 4 14) = word 4 12 := by decide
 
 end WordRam.Examples

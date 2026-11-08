@@ -13,6 +13,26 @@ def word (w n : Nat) : Word w := BitVec.ofNat w n
 executable definition independent of axioms used by `BitVec.umod`'s bound proof. -/
 def unsignedMod (x y : Word w) : Word w := word w (x.toNat % y.toNat)
 
+/-- Logical right shift by the full unsigned count, without masking. The natural
+shift avoids constructing an exponentially large divisor during evaluation. -/
+def unsignedShiftRight (x count : Word w) : Word w :=
+  word w (x.toNat >>> count.toNat)
+
+theorem unsignedShiftRight_eq (x count : Word w) :
+    unsignedShiftRight x count = x >>> count.toNat := by
+  apply BitVec.eq_of_toNat_eq
+  simp [unsignedShiftRight, word, Nat.mod_eq_of_lt
+    (Nat.lt_of_le_of_lt (Nat.shiftRight_le _ _) x.isLt)]
+
+@[simp] theorem unsignedShiftRight_toNat (x count : Word w) :
+    (unsignedShiftRight x count).toNat = x.toNat / 2 ^ count.toNat := by
+  rw [unsignedShiftRight_eq, BitVec.toNat_ushiftRight, Nat.shiftRight_eq_div_pow]
+
+theorem unsignedShiftRight_large (x count : Word w) (h : w ≤ count.toNat) :
+    unsignedShiftRight x count = 0 := by
+  rw [unsignedShiftRight_eq]
+  exact BitVec.ushiftRight_eq_zero h
+
 @[simp] theorem unsignedMod_eq (x y : Word w) : unsignedMod x y = x % y :=
   BitVec.umod_def.symm
 

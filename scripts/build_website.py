@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
-WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Random", "Examples"]
+WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Arrays", "Random", "Examples"]
 FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/StaticSet/Specification.lean"),
     Path("DataStructures/PerfectHash/Admissibility.lean"),

@@ -20,7 +20,7 @@ The existing foundations are appropriate and should remain authoritative:
 | [Checks](../Checks.lean) | Audits standard proof axioms separately from executable definitions, which must have no axiom dependencies. |
 | [Machine reference](word-ram.md) | Existing statement of the model, including unit-cost multiplication/remainder and the distinction between RAM cost and interpreter runtime. |
 
-The project pins Lean 4.24.0 and Mathlib commit `f897ebcf72cd16f89ab4577d0c826cd14afaafc7`. Use those local sources when selecting APIs. The current probability interface is about bounded executions; it does not yet define or prove expected time to successful termination. The instruction set has neither division nor shifts. `Steps.trans` exists, but reusable memory-region assertions, verified array loops, code relocation, and hashing-specific refinements do not.
+The project pins Lean 4.24.0 and Mathlib commit `f897ebcf72cd16f89ab4577d0c826cd14afaafc7`. Use those local sources when selecting APIs. The current probability interface is about bounded executions; it does not yet define or prove expected time to successful termination. The initial instruction set had neither division nor shifts; M1 now supplies the frozen logical-right-shift instruction. M1 supplies reusable memory-region assertions, verified array loops, and code relocation alongside `Steps.trans`. Hashing-specific refinements remain later milestones.
 
 ### Reference implementation
 
@@ -149,7 +149,7 @@ The family has collision bound `2/m`. Its classical proof is in Dietzfelbingerâ€
 
 One uniform raw word `r` produces a uniform odd seed via `r - (r % 2) + 1`; prove the two-to-one fibers. Enumerate odd seeds directly. Store the shift amount with each seed so query performs no logarithm calculation. The family, its seed distribution, its encoding, and its RAM evaluator should be separate modules. Thorup's notes provide a readable proof and distinguish this collision guarantee from stronger independence properties. [Sections 2.3 and 3](https://arxiv.org/pdf/1504.06804)
 
-This needs a logical-right-shift instruction absent from the current ISA. Specify the shift count and the result for counts at least `w`, update all machine proofs, and preserve old-instruction semantics. A software emulation is another option, but its cost must be charged; an `O(w)` evaluator cannot support the desired query bound. Do not silently assume mathematical division is already a unit-cost instruction.
+M1 now provides the required logical-right-shift instruction, including full-count and oversized-count semantics, and rechecks all machine proofs. A software emulation is another option, but its cost must be charged; an `O(w)` evaluator cannot support the desired query bound. Do not silently assume mathematical division is already a unit-cost instruction.
 
 An affine-mod-prime backend is a useful optional reference instance because much of its mathematics exists nearby. It should not become a mandatory detour or weaken the final full-word theorem. If used, retain its residue-bias proof and restriction on stored keys.
 
@@ -322,6 +322,13 @@ Write the public semantic specification, the assumption ledger, and a sample the
 **Complete when:** a reviewer can read one specification and determine exactly what the two programs must accomplish, including duplicates, all-word queries, all-seed correctness, expected versus worst-case time, and every environmental assumption. Any restricted intermediate theorem has a visibly narrower name and contract.
 
 ### M1 â€” Add only the machine and proof infrastructure needed
+
+**Implemented:** `shr` follows the frozen full-count semantics. `WordRam/Regions.lean`
+extracts the unchanged M0 assertions; `Blocks.lean` adds composition and prefix
+permissions; `Assembly.lean` adds symbolic labels and execution-preserving relocation;
+`Arrays.lean` proves fill/clear, copy, and traversal with exact `7*n+2` instruction
+counts, frames, and fitting access regions. Dirty-memory, empty-array, boundary,
+partial-store, relocated-code, and shift-alias checks exercise the implementation.
 
 **Dependencies:** M0. **Main risk:** infrastructure expansion obscuring the algorithm.
 

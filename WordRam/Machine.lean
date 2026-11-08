@@ -58,6 +58,7 @@ def step (p : Program R) (rho : RandomMemory w) (s : State w R) : StepResult w R
   | some (.sub d x y) => .next (s.put d (val x - val y)) none
   | some (.mul d x y) => .next (s.put d (val x * val y)) none
   | some (.mod d x y) => .next (s.put d (unsignedMod (val x) (val y))) none
+  | some (.shr d x count) => .next (s.put d (unsignedShiftRight (val x) (val count))) none
   | some (.load d a) => .next (s.put d (s.mem (val a))) (some (.dataRead (val a) (s.mem (val a))))
   | some (.store a x) =>
       .next { s with pc := s.pc + 1, mem := update s.mem (val a) (val x) }

@@ -1,6 +1,6 @@
 # Word RAM model and execution semantics
 
-This library defines a word RAM in Lean with fixed-width unsigned words, a finite register file, mutable data memory, and a separate addressable read-only random memory. Programs are finite arrays of assembly instructions. Multiplication and unsigned remainder are primitive unit-cost instructions.
+This library defines a word RAM in Lean with fixed-width unsigned words, a finite register file, mutable data memory, and a separate addressable read-only random memory. Programs are finite arrays of assembly instructions. Multiplication, unsigned remainder, and logical right shift are primitive unit-cost instructions.
 
 Execution is deterministic once the random-memory contents are fixed. A separate probability layer chooses the entire random memory uniformly, which makes its cells independent uniform words. A repeated read of an address returns the same value. A store changes only ordinary data memory.
 
@@ -61,7 +61,7 @@ For example, the existing `Examples.countdown` program has this layout, where `r
 | 2 | `.jump 0` |
 | 3 | `.halt` |
 
-At index 0, a zero register value sends execution to index 3; otherwise execution proceeds to index 1. Index 2 returns to index 0. The author supplies the target numbers `3` and `0`; the library has no assembler or symbolic label resolver. A jump or taken branch may set an out-of-range PC, which faults on the next fetch. Falling off the final instruction also faults.
+At index 0, a zero register value sends execution to index 3; otherwise execution proceeds to index 1. Index 2 returns to index 0. This example supplies the target numbers `3` and `0` directly. `Assembly.compile` also accepts symbolic labels, resolves their instruction offsets, and rejects duplicate definitions or missing targets. Label markers occupy no instructions. `Instr.relocate`, `Embedded.append`, and the execution relocation theorems justify embedding assembled blocks between arbitrary neighboring code. A jump or taken branch may set an out-of-range PC, which faults on the next fetch. Falling off the final instruction also faults.
 
 ### Inputs and outputs
 
@@ -79,6 +79,7 @@ Addition, subtraction, and multiplication retain the low `w` bits. For unsigned 
 | Multiplication | `(x * y) mod U` |
 | Remainder, `y > 0` | `x mod y` |
 | Remainder, `y = 0` | `x` |
+| Logical right shift by `c` | `floor(x / 2^c)`; zero for `c ≥ w` |
 
 `unsignedMod` implements remainder by forming a word from `x.toNat % y.toNat`. The theorem `unsignedMod_eq` proves that it equals Lean's `BitVec` remainder. This wrapper avoids an axiom dependency in the bounds proof of the pinned version's built-in remainder definition; it does not change the operation's result.
 
@@ -95,6 +96,7 @@ An `Operand R` is either `.reg r` or `.imm n`. Its evaluation reads one register
 | `.sub dst x y` | Write the wrapping difference. |
 | `.mul dst x y` | Write the wrapping product. |
 | `.mod dst x y` | Write the unsigned remainder, including the zero-divisor convention. |
+| `.shr dst x count` | Shift logically by the full unsigned count, without masking. |
 | `.load dst addr` | Read ordinary memory at the evaluated address into `dst`. |
 | `.store addr src` | Write the evaluated source to ordinary memory. |
 | `.rload dst addr` | Read the fixed random memory at the evaluated address into `dst`. |
@@ -286,7 +288,33 @@ Every complete image in the finite uniform space has positive probability. Conse
 
 Multiplication wraps before any later remainder, so proofs of mathematical modular products need no-overflow bounds or a different implementation. Reducing a uniform word modulo a positive integer `m` gives uniform residues in `0, …, m-1` exactly when `m` divides `U`: otherwise some residues have more preimages among the `U` word values than others. Uniform words therefore do not automatically give uniform residues.
 
-The instruction set has no bitwise or shift operations, full-width multiplication, allocation, or built-in calling convention. Programs requiring those operations must express them using the listed instructions or use an explicitly extended model.
+The instruction set has no bitwise Boolean operations, left shift, full-width multiplication, allocation, or built-in calling convention. Programs requiring those operations must express them using the listed instructions or use an explicitly extended model.
+
+## Regions, blocks, and verified array loops
+
+`Region` uses natural half-open intervals and the strict fit condition
+`base + size < 2^w`. `ArrayAt` describes occurrence lists without assuming
+uniqueness or zeroed memory. The original `StaticSet` names re-export these same
+assertions. `BlockSpec` composes exact `Steps` witnesses, instruction bounds,
+and separate read/write/random permissions. `TerminatesIn.prefix_policy`
+transfers a complete trace's permissions to every fuel prefix;
+`TerminatesIn.noFault` excludes faults at every fuel budget.
+
+`Arrays.program` assembles fill, copy, and read-only traversal loops using four
+registers: source cursor, destination cursor, remaining count, and value/temporary.
+Fill's first two body instructions are a register move and a store; copy uses a
+load and a store; traversal uses a load and a register move. All modes then advance
+both cursors, decrement the count, and jump back. Every mode executes exactly
+`7*n + 2` instructions including the exit branch and final halt. The zero-count
+case performs no memory access. Clear is fill with value zero.
+
+`Arrays.fill_array` establishes the replicated output; `Arrays.copy_array`
+establishes the copied occurrence list for separated, fitting source/destination
+regions. `Arrays.iterate_frame` preserves all memory outside the destination,
+and `Arrays.visit_memory` preserves the whole memory. `Arrays.trace_local`
+proves every address lies in the appropriate interval; `trace_random` rules out
+random reads. The hypotheses ensure increments reach representable endpoints,
+without wrapping accessed addresses. These programs are independent of hashing.
 
 ## Build and check
 
@@ -354,6 +382,10 @@ The library's `Examples.randomRoundTrip_spec` proves the analogous program's beh
 | [Machine.lean](../WordRam/Machine.lean) | State, memory events, faults, and the authoritative step function. |
 | [Execution.lean](../WordRam/Execution.lean) | Bounded evaluator, exact execution relations, termination, and divergence. |
 | [Properties.lean](../WordRam/Properties.lean) | Composition interfaces, fuel stability, resumption, frame and agreement proofs, resource observations. |
+| [Regions.lean](../WordRam/Regions.lean) | Fitting intervals, array assertions, separation, and memory agreement. |
+| [Blocks.lean](../WordRam/Blocks.lean) | Block composition, trace permissions, prefix locality, and fault exclusion. |
+| [Assembly.lean](../WordRam/Assembly.lean) | Symbolic labels, executable assembly, and execution-preserving relocation. |
+| [Arrays.lean](../WordRam/Arrays.lean) | Verified fill, copy, and traversal loops with exact instruction counts. |
 | [Random.lean](../WordRam/Random.lean) | Finite instances, probability laws, counting, independence, conditioning, and expected bounded work. |
 | [Examples.lean](../WordRam/Examples.lean) | Small assembly programs, semantic specifications, and execution checks. |
 | [Checks.lean](../Checks.lean) | Additional arithmetic/probability checks and the axiom audit. |

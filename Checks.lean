@@ -68,12 +68,17 @@ run_cmd do
           throwError "Unexpected axiom in {name}: {ax}"
       checked := checked + 1
   Lean.logInfo m!"Axiom audit passed for {checked} library declarations."
-  for name in [``word, ``unsignedMod, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
+  for name in [``word, ``unsignedMod, ``unsignedShiftRight, ``update, ``Operand.eval, ``Comparison.test, ``State.initial,
       ``State.zero, ``State.put, ``step, ``run, ``RunResult.prepend,
       ``RunResult.dataFootprint, ``RunResult.writeFootprint, ``RunResult.randomReads,
       ``RunResult.randomFootprint, ``RunResult.randomBitsExposed,
       ``Examples.arithmetic, ``Examples.mulMod, ``Examples.randomRoundTrip,
       ``Examples.countdown, ``Examples.spin, ``Examples.branchExample,
+      ``Instr.relocate, ``Assembly.Instruction.resolve, ``Assembly.assemble,
+      ``Assembly.instructions, ``Assembly.labelOffset, ``Assembly.labelsDefined,
+      ``Assembly.Instruction.target, ``Assembly.compile, ``State.relocate,
+      ``Arrays.readInstruction, ``Arrays.writeInstruction, ``Arrays.assembly, ``Arrays.program,
+      ``Examples.shiftAlias, ``Examples.arrayBoundaryState,
       ``StaticSet.registerCount, ``StaticSet.readDescriptor,
       ``PerfectHash.dictionaryCapacity, ``PerfectHash.workspaceCapacity,
       ``PerfectHash.bucketCapacity, ``PerfectHash.randomCapacity,

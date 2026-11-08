@@ -31,6 +31,7 @@ inductive Instr (R : Nat) where
   | sub (dst : Reg R) (x y : Operand R)
   | mul (dst : Reg R) (x y : Operand R)
   | mod (dst : Reg R) (x y : Operand R)
+  | shr (dst : Reg R) (x count : Operand R)
   | load (dst : Reg R) (addr : Operand R)
   | store (addr src : Operand R)
   | rload (dst : Reg R) (addr : Operand R)
