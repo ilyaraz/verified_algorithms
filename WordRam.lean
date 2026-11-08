@@ -9,3 +9,4 @@ import WordRam.Regions
 import WordRam.Blocks
 import WordRam.Assembly
 import WordRam.Arrays
+import WordRam.RandomBlocks

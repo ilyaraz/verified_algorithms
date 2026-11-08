@@ -354,6 +354,14 @@ An affine backend is optional; do not block M3–M5 on implementing two families
 
 ### M3 — Establish reusable probability and finite-search lemmas
 
+**Implemented:** `Probability/{Finite,Retry,FiniteSearch}.lean` proves finite
+averages, capped retries, total exhaustive fallback, and the `3B` word-budget
+expectation. `WordRam/RandomBlocks.lean` transfers disjoint coordinates and
+history-dependent stage bounds to the existing random-memory law. A concrete
+predicate-search RAM program terminates on every image, including forced fallback,
+with exact expectation `3+4/2^w ≤ 5` and a one-cell random reservation. See the
+[finite-search reference](finite-search.md).
+
 **Dependencies:** M0; concrete seed parameters from M2. **Main risk:** unjustified independence or expected-time claims.
 
 Prove finite expectation/Markov/union-bound wrappers as needed, capped retry tails and expected attempts, sequential stage cost composition, and capped-random-plus-enumeration totality and expectation. Prove random-block law transfer using the existing random-memory semantics. Keep these results generic in the seed type and trial state.

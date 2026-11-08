@@ -8,7 +8,7 @@ Read the [word RAM reference](docs/word-ram.md) for the complete machine definit
 
 The [perfect hashing roadmap](docs/perfect-hashing-plan.md) plans a modular static membership dictionary with repeated-input support, explicit resource bounds, and executable certified programs.
 
-M0's [static dictionary contract](docs/perfect-hashing-spec.md) is implemented in `DataStructures`: calling conventions, explicit admissibility predicates, a full correctness/resource target, and proved feasible layouts. M1 adds logical right shift, reusable memory/block assertions, labelled assembly with proved relocation, and verified fill/copy/traversal loops. M2 supplies the [verified multiply-shift family](docs/hashing.md), sampler, finite enumeration, and constant-cost RAM evaluator. The dictionary programs remain later milestones.
+M0's [static dictionary contract](docs/perfect-hashing-spec.md) is implemented in `DataStructures`: calling conventions, explicit admissibility predicates, a full correctness/resource target, and proved feasible layouts. M1 adds logical right shift, reusable memory/block assertions, labelled assembly with proved relocation, and verified fill/copy/traversal loops. M2 supplies the [verified multiply-shift family](docs/hashing.md), sampler, finite enumeration, and constant-cost RAM evaluator. M3 adds [finite retry/fallback proofs and random-block law transfer](docs/finite-search.md). The dictionary programs remain later milestones.
 
 The [Lean Atlas website](website/README.md) provides an interactive dependency diagram,
 plain-language descriptions of every authored definition and statement, and links to

@@ -1,6 +1,7 @@
 import Hashing.MultiplyShift
 import Hashing.Family
 import WordRam.Random
+import Probability.Finite
 
 namespace Hashing.MultiplyShift
 open WordRam
@@ -116,5 +117,13 @@ theorem cell_sample_probability (address : Addr (w+1)) (a : Seed w) :
   rw [probability_congr (fun rho => by
     rw [sample_eq_encode, encode_injective.eq_iff])]
   exact cell_seed_probability address a
+
+/-- Every function of the sampled seed has the exact uniform seed average. This
+lets retry predicates and trial costs use the M2 seed law without bias factors. -/
+theorem mean_rawSeed (f : Seed w → ℝ) :
+    FiniteProbability.mean (fun r : Word (w+1) => f (rawIndex r)) = FiniteProbability.mean f := by
+  have h := FiniteProbability.mean_equiv (rawEquiv w) (fun p => f p.1)
+  rw [FiniteProbability.mean_prod] at h
+  simpa only [rawEquiv, Equiv.coe_fn_mk, FiniteProbability.mean_const] using h
 
 end Hashing.MultiplyShift

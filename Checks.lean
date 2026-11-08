@@ -4,6 +4,8 @@ import DataStructures
 import DataStructures.PerfectHash.Examples
 import Hashing
 import Hashing.Examples
+import Probability
+import Probability.Examples
 import Lean
 
 open WordRam
@@ -64,7 +66,7 @@ run_cmd do
   let allowed := [``propext, ``Classical.choice, ``Quot.sound]
   let mut checked := 0
   for (name, _) in env.constants.toList do
-    if [`WordRam, `StaticSet, `PerfectHash, `Hashing].contains name.getRoot then
+    if [`WordRam, `StaticSet, `PerfectHash, `Hashing, `FiniteProbability].contains name.getRoot then
       for ax in ← Lean.collectAxioms name do
         unless allowed.contains ax do
           throwError "Unexpected axiom in {name}: {ax}"
@@ -86,6 +88,11 @@ run_cmd do
       ``Hashing.MultiplyShiftRam.evaluator, ``Hashing.MultiplyShiftRam.sampler,
       ``Hashing.MultiplyShiftRam.advanceSeed,
       ``Hashing.Examples.collisionCheck, ``Hashing.Examples.evaluatorRegisters,
+      ``RandomBlocks.address, ``RandomBlocks.stageBase,
+      ``FiniteProbability.Retry.attempts, ``FiniteProbability.Retry.failed, ``FiniteProbability.Retry.find,
+      ``FiniteProbability.FiniteSearch.search, ``FiniteProbability.FiniteSearch.enumerationAttempts,
+      ``FiniteProbability.FiniteSearch.searchWork, ``FiniteProbability.FiniteSearch.work,
+      ``FiniteProbability.Examples.predicateSearch,
       ``StaticSet.registerCount, ``StaticSet.readDescriptor,
       ``PerfectHash.dictionaryCapacity, ``PerfectHash.workspaceCapacity,
       ``PerfectHash.bucketCapacity, ``PerfectHash.randomCapacity,
