@@ -5,6 +5,7 @@ import DataStructures.PerfectHash.Examples
 import DataStructures.PerfectHash.Build.Examples
 import DataStructures.PerfectHash.Query.Examples
 import DataStructures.PerfectHash.Construction.Examples
+import DataStructures.PerfectHash.Bounded.Examples
 import Hashing
 import Hashing.Examples
 import Probability
@@ -228,7 +229,18 @@ run_cmd do
       ``PerfectHash.Construction.Round.roundNext,
       ``PerfectHash.Construction.slotContents,
       ``PerfectHash.Construction.slotMemory,
-      ``PerfectHash.Construction.childAccepted] do
+      ``PerfectHash.Construction.childAccepted,
+      ``WordRam.consecutiveAddresses,
+      ``PerfectHash.Bounded.inlineInstruction, ``PerfectHash.Bounded.inlineAux,
+      ``PerfectHash.Bounded.inlineBlock, ``PerfectHash.Bounded.sampleCode,
+      ``PerfectHash.Bounded.assembly, ``PerfectHash.Bounded.location, ``PerfectHash.Bounded.program,
+      ``PerfectHash.Bounded.fuel,
+      ``PerfectHash.Bounded.Examples.repeatedKeys, ``PerfectHash.Bounded.Examples.memory,
+      ``PerfectHash.Bounded.Examples.execute, ``PerfectHash.Bounded.Examples.goodRun,
+      ``PerfectHash.Bounded.Examples.queryAnswer, ``PerfectHash.Bounded.Examples.overwritten,
+      ``PerfectHash.Bounded.Examples.rootFailure, ``PerfectHash.Bounded.Examples.childFailure,
+      ``PerfectHash.Bounded.Examples.lastRootAttempt, ``PerfectHash.Bounded.Examples.emptyRun,
+      ``PerfectHash.Bounded.Examples.equalRun, ``PerfectHash.Bounded.Examples.boundaryRun] do
     let axioms ← Lean.collectAxioms name
     unless axioms.isEmpty do
       throwError "Executable definition {name} uses axioms: {axioms}"

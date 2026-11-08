@@ -72,4 +72,44 @@ theorem Steps.then_terminates (h : Steps p rho k s t log)
   obtain ⟨n,hl,hs,hh⟩ := ht
   exact ⟨k+n,by omega,h.trans hs,hh⟩
 
+/-- A caller replaces every callee halt by a jump to the named continuation. -/
+def HaltsTo (p q : Program R) (base continuation : Nat) : Prop :=
+  ∀ pc, p[pc]? = some .halt → q[base+pc]? = some (.jump continuation)
+
+theorem HaltsTo.of_check (p q : Program R) (base continuation : Nat)
+    (h : ∀ pc : Fin p.size, p[pc.val]? = some .halt →
+      q[base+pc.val]? = some (.jump continuation)) : HaltsTo p q base continuation := by
+  intro pc hp
+  obtain ⟨hb,_⟩ := Array.getElem?_eq_some_iff.mp hp
+  exact h ⟨pc,hb⟩ hp
+
+theorem halt_fetch (h : step p rho s = .halt) : p[s.pc]? = some .halt := by
+  unfold step at h
+  cases hi : p[s.pc]? with
+  | none => simp [hi] at h
+  | some i => cases i <;> simp_all
+
+/-- Inlining a terminating callee charges the replacement jump exactly as its
+standalone halt and returns the same registers, ordinary memory, and trace. -/
+theorem TerminatesIn.call (h : TerminatesIn p rho s k t log)
+    (he : BodyEmbedded p q base) (hh : HaltsTo p q base continuation) :
+    Steps q rho k (s.relocate base) {t with pc := continuation} log := by
+  obtain ⟨n,hk,hs,ht⟩ := h
+  have hf := hh t.pc (halt_fetch ht)
+  have hj : Step q rho (t.relocate base) {t with pc := continuation} none := by
+    unfold Step step
+    rw [show (t.relocate base).pc = base+t.pc from rfl,hf]
+    rfl
+  have hend : Steps q rho 1 (t.relocate base) {t with pc := continuation} [] :=
+    .cons hj (.refl _)
+  simpa [hk] using (hs.relocate_body he).trans hend
+
+/-- A finite register-preservation check, reusable for each inlined routine. -/
+theorem register_preserved_of_check (p : Program R) (r : Reg R)
+    (h : ∀ pc : Fin p.size, p[pc.val].destination ≠ some r) :
+    ∀ (pc : Nat) (i : Instr R), p[pc]? = some i → i.destination ≠ some r := by
+  intro pc i hi
+  obtain ⟨hb,he⟩ := Array.getElem?_eq_some_iff.mp hi
+  simpa [he] using h ⟨pc,hb⟩
+
 end WordRam

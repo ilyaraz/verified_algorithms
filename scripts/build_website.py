@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
-WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Refinement", "Arrays", "Random", "RandomBlocks", "Examples"]
+WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Refinement", "BoundedRetry", "Arrays", "Random", "RandomBlocks", "Examples"]
 HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
                    "MultiplyShiftProbability", "MultiplyShiftRam", "MultiplyShiftRounding", "Examples"]
 DEDUP_MODULES = ["Specification", "Model", "Bounds", "Program", "Representation", "Insertion",
@@ -64,6 +64,30 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/PerfectHash/Construction/RootRound.lean"),
     Path("DataStructures/PerfectHash/Construction/Round.lean"),
     Path("DataStructures/PerfectHash/Construction/Slots.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Allocation.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Blocks.lean"),
+    Path("DataStructures/PerfectHash/Bounded/ChildCompletion.lean"),
+    Path("DataStructures/PerfectHash/Bounded/ChildSearch.lean"),
+    Path("DataStructures/PerfectHash/Bounded/ChildStage.lean"),
+    Path("DataStructures/PerfectHash/Bounded/ChildTrial.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Correctness.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Examples.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Fuel.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Geometry.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Interface.lean"),
+    Path("DataStructures/PerfectHash/Bounded/MachineCode.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Metadata.lean"),
+    Path("DataStructures/PerfectHash/Bounded/OuterInitialization.lean"),
+    Path("DataStructures/PerfectHash/Bounded/OuterLoop.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Parameters.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Partial.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Prelude.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Program.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Representation.lean"),
+    Path("DataStructures/PerfectHash/Bounded/RootInitialization.lean"),
+    Path("DataStructures/PerfectHash/Bounded/RootSearch.lean"),
+    Path("DataStructures/PerfectHash/Bounded/RootTrial.lean"),
+    Path("DataStructures/PerfectHash/Bounded/Work.lean"),
     Path("Checks.lean"),
 ]
 

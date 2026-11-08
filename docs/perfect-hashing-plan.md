@@ -431,6 +431,13 @@ Verify root directory clearing, one-pass grouping, capped energy accumulation, a
 
 ### M8 — Assemble a bounded constructor and prove end-to-end refinement
 
+**Implemented:** the fixed 231-instruction bounded constructor composes
+deduplication, root retries, allocation, and child retries. Named simulation
+relations establish the M6 query representation on success, with a truthful
+budget-exhausted halt otherwise. Actual instruction bounds, sufficient fuel,
+prefix access/frame/no-fault guarantees, and fresh bounded random reads are
+proved. See the [bounded-constructor reference](perfect-hashing-bounded.md).
+
 **Dependencies:** M3–M7. **Main risk:** an abstract proof that fails to describe actual code.
 
 Compose the blocks into one fixed preprocessing program with explicit retry budgets and success/budget status. Establish a named simulation relation between concrete RAM states and the abstract construction state. Prove no invalid-PC fault, actual instruction and random-read accounting, frame/locality for every finite execution prefix, and establishment of the query representation on success.

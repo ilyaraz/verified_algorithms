@@ -12,6 +12,7 @@ name = "WordRam"
 
 [[lean_lib]]
 name = "DataStructures"
+moreLeanArgs = ["-s", "131072"]
 
 [[lean_lib]]
 name = "Checks"

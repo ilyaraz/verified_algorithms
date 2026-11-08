@@ -31,7 +31,7 @@ class WebsiteTests(unittest.TestCase):
             ("WordRam.Operand", "WordRam.Instr"),  # Instruction constructors.
             ("WordRam.Examples.r0", "WordRam.Examples.arithmetic"),  # Private name.
             ("WordRam.wordFintype", "WordRam.randomMemoryLaw"),  # Inferred instance.
-            ("WordRam.probability_two_cells", "Checks.example_29"),  # Anonymous proof.
+            ("WordRam.probability_two_cells", "Checks.example_30"),  # Anonymous proof.
             ("StaticSet.QuerySpec", "PerfectHash.DictionarySpec"),
             ("StaticSet.QuerySpec.after_overwrite", "PerfectHash.DictionarySpec.query_after_build"),
         ]:
