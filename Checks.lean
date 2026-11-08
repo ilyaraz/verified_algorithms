@@ -6,6 +6,7 @@ import DataStructures.PerfectHash.Build.Examples
 import DataStructures.PerfectHash.Query.Examples
 import DataStructures.PerfectHash.Construction.Examples
 import DataStructures.PerfectHash.Bounded.Examples
+import DataStructures.PerfectHash.Total.Examples
 import Hashing
 import Hashing.Examples
 import Probability
@@ -240,7 +241,12 @@ run_cmd do
       ``PerfectHash.Bounded.Examples.queryAnswer, ``PerfectHash.Bounded.Examples.overwritten,
       ``PerfectHash.Bounded.Examples.rootFailure, ``PerfectHash.Bounded.Examples.childFailure,
       ``PerfectHash.Bounded.Examples.lastRootAttempt, ``PerfectHash.Bounded.Examples.emptyRun,
-      ``PerfectHash.Bounded.Examples.equalRun, ``PerfectHash.Bounded.Examples.boundaryRun] do
+      ``PerfectHash.Bounded.Examples.equalRun, ``PerfectHash.Bounded.Examples.boundaryRun,
+      ``PerfectHash.Total.fallbackCode, ``PerfectHash.Total.program,
+      ``PerfectHash.Total.seedCount, ``PerfectHash.Total.candidate, ``PerfectHash.Total.bounds,
+      ``PerfectHash.Total.Examples.fallbackKeys, ``PerfectHash.Total.Examples.execute,
+      ``PerfectHash.Total.Examples.rootImage, ``PerfectHash.Total.Examples.emptyBudgetState,
+      ``PerfectHash.Total.Examples.checkRun] do
     let axioms ← Lean.collectAxioms name
     unless axioms.isEmpty do
       throwError "Executable definition {name} uses axioms: {axioms}"

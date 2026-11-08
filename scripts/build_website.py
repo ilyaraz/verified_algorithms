@@ -15,12 +15,12 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "website"
 OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
-WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Refinement", "BoundedRetry", "Arrays", "Random", "RandomBlocks", "Examples"]
+WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Refinement", "BoundedRetry", "DeterministicSearch", "Footprint", "Arrays", "Random", "RandomBlocks", "Examples"]
 HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
                    "MultiplyShiftProbability", "MultiplyShiftRam", "MultiplyShiftRounding", "Examples"]
 DEDUP_MODULES = ["Specification", "Model", "Bounds", "Program", "Representation", "Insertion",
                  "Blocks", "Clear", "Round", "Search", "Loop", "Initialization", "Correctness", "Expected", "Examples"]
-PROBABILITY_MODULES = ["Finite", "Retry", "FiniteSearch", "FiniteSequence", "Examples"]
+PROBABILITY_MODULES = ["Finite", "Retry", "FiniteSearch", "FiniteSequence", "RetryTransform", "Examples"]
 FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("Hashing") / f"{m}.lean" for m in HASHING_MODULES
 ] + [Path("Probability") / f"{m}.lean" for m in PROBABILITY_MODULES ] + [Path("Algorithms/Dedup") / f"{m}.lean" for m in DEDUP_MODULES] + [
@@ -88,6 +88,28 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/PerfectHash/Bounded/RootSearch.lean"),
     Path("DataStructures/PerfectHash/Bounded/RootTrial.lean"),
     Path("DataStructures/PerfectHash/Bounded/Work.lean"),
+    Path("DataStructures/PerfectHash/Total/Acceptance.lean"),
+    Path("DataStructures/PerfectHash/Total/Blocks.lean"),
+    Path("DataStructures/PerfectHash/Total/ChildFallback.lean"),
+    Path("DataStructures/PerfectHash/Total/ChildStage.lean"),
+    Path("DataStructures/PerfectHash/Total/Contract.lean"),
+    Path("DataStructures/PerfectHash/Total/Correctness.lean"),
+    Path("DataStructures/PerfectHash/Total/Examples.lean"),
+    Path("DataStructures/PerfectHash/Total/Expected.lean"),
+    Path("DataStructures/PerfectHash/Total/ExpectedRandom.lean"),
+    Path("DataStructures/PerfectHash/Total/ExpectedStages.lean"),
+    Path("DataStructures/PerfectHash/Total/FallbackProbability.lean"),
+    Path("DataStructures/PerfectHash/Total/Fuel.lean"),
+    Path("DataStructures/PerfectHash/Total/Interface.lean"),
+    Path("DataStructures/PerfectHash/Total/MachineCode.lean"),
+    Path("DataStructures/PerfectHash/Total/OuterLoop.lean"),
+    Path("DataStructures/PerfectHash/Total/Program.lean"),
+    Path("DataStructures/PerfectHash/Total/RandomLaw.lean"),
+    Path("DataStructures/PerfectHash/Total/RootFallback.lean"),
+    Path("DataStructures/PerfectHash/Total/RootStage.lean"),
+    Path("DataStructures/PerfectHash/Total/Selection.lean"),
+    Path("DataStructures/PerfectHash/Total/Work.lean"),
+    Path("DataStructures/PerfectHash/Total/WorstCase.lean"),
     Path("Checks.lean"),
 ]
 

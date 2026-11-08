@@ -12,3 +12,5 @@ import WordRam.Refinement
 import WordRam.Arrays
 import WordRam.RandomBlocks
 import WordRam.BoundedRetry
+import WordRam.DeterministicSearch
+import WordRam.Footprint

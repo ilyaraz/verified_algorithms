@@ -8,3 +8,4 @@ import DataStructures.PerfectHash.Build.Placement
 import DataStructures.PerfectHash.Query.Correctness
 import DataStructures.PerfectHash.Construction.Refinement
 import DataStructures.PerfectHash.Bounded.Interface
+import DataStructures.PerfectHash.Total.Contract

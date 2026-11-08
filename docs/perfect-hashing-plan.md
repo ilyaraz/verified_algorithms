@@ -448,6 +448,13 @@ Compose with deduplication to obtain the first complete repeated-input construct
 
 ### M9 — Close totality and expected linear preprocessing
 
+**Implemented:** `Total.specification` proves the frozen M0 `DictionarySpec` for
+the fixed 238-instruction constructor and 33-instruction query. Complete odd-seed
+fallback gives successful termination for every random image. Actual expected
+instructions, all-image cost, random reads/bits, fallback probability, retained
+space, and every-prefix peak footprint are proved. Constants and theorem paths
+are documented in the [total-constructor reference](perfect-hashing-total.md).
+
 **Dependencies:** M3 and M7–M8. **Main risk:** stopping at a high-probability partial result.
 
 Replace budget exhaustion by the verified exhaustive fallback, retaining the same trial blocks and query representation. Prove successful termination for every `rho`, a finite worst-case instruction bound, and expected time to that successful halt. Transfer conditional stage bounds to the complete run, including deduplication. Prove expected/max random reads, random-block capacity, exposed bits, and fallback probability. Prove final retained-space and peak-workspace inequalities.
