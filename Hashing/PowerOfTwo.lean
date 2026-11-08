@@ -39,4 +39,40 @@ theorem conservative (n : Nat) : size n ≤ 2*(n+1) := by
     have h : size (n+1) < 2*(n+1) := less_than_twice (by omega)
     omega
 
+/-- Explicit bounded search for the ceiling base-two logarithm. This computation
+uses natural powers directly and does not depend on the proof-side clog implementation. -/
+def computeBitsAux (n : Nat) : Nat → Nat → Nat
+  | 0,k => k
+  | fuel+1,k => if n ≤ Nat.pow 2 k then k else computeBitsAux n fuel (k+1)
+
+def computeBits (n : Nat) : Nat := computeBitsAux n (n+1) 0
+
+def computeSize (n : Nat) : Nat := Nat.pow 2 (computeBits n)
+
+theorem computeBitsAux_eq (n fuel k : Nat) (hk : k ≤ bits n) (hf : bits n ≤ k+fuel) :
+    computeBitsAux n fuel k = bits n := by
+  induction fuel generalizing k with
+  | zero => simp only [computeBitsAux]; omega
+  | succ fuel ih =>
+    simp only [computeBitsAux]
+    split
+    · rename_i h
+      have hh := least h
+      omega
+    · rename_i h
+      have hl : k < bits n := by
+        by_contra hn
+        have he : k = bits n := by omega
+        exact h (he ▸ covers n)
+      exact ih (k+1) (by omega) (by omega)
+
+theorem computeBits_eq (n : Nat) : computeBits n = bits n := by
+  apply computeBitsAux_eq n (n+1) 0 (Nat.zero_le _)
+  have hh : bits n ≤ n := least (Nat.le_of_lt Nat.lt_two_pow_self)
+  omega
+
+theorem computeSize_eq (n : Nat) : computeSize n = size n := by
+  simp only [computeSize,computeBits_eq,size]
+  rfl
+
 end Hashing.PowerOfTwo

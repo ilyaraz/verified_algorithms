@@ -385,6 +385,14 @@ Specify the input/compact-output relation. Prove totality, distinctness, members
 
 ### M5 — Prove FKS combinatorics and abstract construction
 
+**Implemented:** bucket energy and unordered-pair identities, root/child rejection
+bounds, `24d` total slots, and the frozen linear retained-space bound are proved.
+An executable finite-search constructor and absorbing stage machine terminate for
+every sample tuple, with expected abstract work at most `90*(d+1)`. The full-word
+multiply-shift instance and conceptual stored-key membership theorem are supplied.
+These are abstract work results; concrete RAM trial refinement remains M7–M9. See
+the [FKS abstract-construction reference](fks-abstract.md).
+
 **Dependencies:** M2–M3. **Main risk:** correct combinatorics attached to an inefficient realization.
 
 Prove bucket partition/count lemmas, the energy identity, root acceptance probability, child collision probability, power-of-two rounding bounds, and total slots/metadata bounds. Define an executable abstract state machine with root trials and independent child retries; give completed stages absorbing behavior. Establish a stage-cost/potential proof using each child's own size.

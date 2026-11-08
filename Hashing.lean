@@ -5,3 +5,4 @@ import Hashing.MultiplyShift
 import Hashing.MultiplyShiftCollision
 import Hashing.MultiplyShiftProbability
 import Hashing.MultiplyShiftRam
+import Hashing.MultiplyShiftRounding

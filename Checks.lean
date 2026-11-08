@@ -2,6 +2,7 @@ import WordRam
 import WordRam.Examples
 import DataStructures
 import DataStructures.PerfectHash.Examples
+import DataStructures.PerfectHash.Build.Examples
 import Hashing
 import Hashing.Examples
 import Probability
@@ -98,6 +99,13 @@ run_cmd do
       ``Dedup.workspaceCapacity, ``Dedup.assembly, ``Dedup.location, ``Dedup.program, ``Dedup.fuel,
       ``Dedup.Examples.layout, ``Dedup.Examples.memory, ``Dedup.Examples.registers,
       ``Dedup.Examples.execute, ``Dedup.Examples.values,
+      ``Hashing.PowerOfTwo.computeBitsAux, ``Hashing.PowerOfTwo.computeBits, ``Hashing.PowerOfTwo.computeSize,
+      ``FiniteProbability.consFin, ``FiniteProbability.sequenceFin,
+      ``PerfectHash.Buckets.keys, ``PerfectHash.Buckets.count, ``PerfectHash.Buckets.pairs,
+      ``PerfectHash.rootAccept, ``PerfectHash.childAccept, ``PerfectHash.Sizes.childSlots,
+      ``PerfectHash.Build.Model.rootSearch, ``PerfectHash.Build.Model.childSearch,
+      ``PerfectHash.Build.Model.construct, ``PerfectHash.Build.Model.advance, ``PerfectHash.Build.Model.advanceMany,
+      ``PerfectHash.Build.Model.position, ``PerfectHash.Build.Model.stored,
       ``StaticSet.registerCount, ``StaticSet.readDescriptor,
       ``PerfectHash.dictionaryCapacity, ``PerfectHash.workspaceCapacity,
       ``PerfectHash.bucketCapacity, ``PerfectHash.randomCapacity,

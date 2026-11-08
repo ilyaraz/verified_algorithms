@@ -1,3 +1,7 @@
 import DataStructures.StaticSet.Specification
 import DataStructures.PerfectHash.Admissibility
 import DataStructures.PerfectHash.Specification
+import DataStructures.PerfectHash.Build.Bounds
+import DataStructures.PerfectHash.Build.Instance
+import DataStructures.PerfectHash.Build.State
+import DataStructures.PerfectHash.Build.Placement

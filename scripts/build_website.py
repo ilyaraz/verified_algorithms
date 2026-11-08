@@ -17,10 +17,10 @@ OUT = SITE / "dist"
 CACHE = ROOT / ".lake/website"
 WORD_RAM_MODULES = ["Word", "Memory", "Program", "Machine", "Execution", "Properties", "Regions", "Blocks", "Assembly", "Arrays", "Random", "RandomBlocks", "Examples"]
 HASHING_MODULES = ["Family", "Modular", "PowerOfTwo", "MultiplyShift", "MultiplyShiftCollision",
-                   "MultiplyShiftProbability", "MultiplyShiftRam", "Examples"]
+                   "MultiplyShiftProbability", "MultiplyShiftRam", "MultiplyShiftRounding", "Examples"]
 DEDUP_MODULES = ["Specification", "Model", "Bounds", "Program", "Representation", "Insertion",
                  "Blocks", "Clear", "Round", "Search", "Loop", "Initialization", "Correctness", "Expected", "Examples"]
-PROBABILITY_MODULES = ["Finite", "Retry", "FiniteSearch", "Examples"]
+PROBABILITY_MODULES = ["Finite", "Retry", "FiniteSearch", "FiniteSequence", "Examples"]
 FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("Hashing") / f"{m}.lean" for m in HASHING_MODULES
 ] + [Path("Probability") / f"{m}.lean" for m in PROBABILITY_MODULES ] + [Path("Algorithms/Dedup") / f"{m}.lean" for m in DEDUP_MODULES] + [
@@ -28,6 +28,15 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("DataStructures/PerfectHash/Admissibility.lean"),
     Path("DataStructures/PerfectHash/Specification.lean"),
     Path("DataStructures/PerfectHash/Examples.lean"),
+    Path("DataStructures/PerfectHash/Buckets.lean"),
+    Path("DataStructures/PerfectHash/Acceptance.lean"),
+    Path("DataStructures/PerfectHash/Sizes.lean"),
+    Path("DataStructures/PerfectHash/Build/Model.lean"),
+    Path("DataStructures/PerfectHash/Build/Bounds.lean"),
+    Path("DataStructures/PerfectHash/Build/State.lean"),
+    Path("DataStructures/PerfectHash/Build/Placement.lean"),
+    Path("DataStructures/PerfectHash/Build/Instance.lean"),
+    Path("DataStructures/PerfectHash/Build/Examples.lean"),
     Path("Checks.lean"),
 ]
 

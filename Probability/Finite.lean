@@ -76,6 +76,14 @@ theorem probability_congr {E F : α → Prop} (h : ∀ a, E a ↔ F a) :
   intro a
   simp [h a]
 
+theorem probability_mono {E F : α → Prop} (h : ∀ a, E a → F a) :
+    probability E ≤ probability F := by
+  apply mean_mono
+  intro a
+  by_cases he : E a
+  · simp [he,h a he]
+  · by_cases hf : F a <;> simp [he,hf]
+
 @[simp] theorem probability_true [Nonempty α] : probability (fun _ : α => True) = 1 := by
   simp [probability]
 
@@ -123,6 +131,13 @@ theorem probability_union_finset (indices : Finset ι) (events : ι → α → P
         events i a ∨ ∃ j ∈ indices, events j a := by intro a; simp
     rw [probability_congr he, Finset.sum_insert hi]
     exact (probability_union _ _).trans (add_le_add_left ih _)
+
+/-- A single coordinate of a uniformly sampled finite function is uniform. -/
+theorem mean_apply {ι : Type*} [Fintype ι] [DecidableEq ι] [Nonempty α]
+    (i : ι) (f : α → ℝ) : mean (fun values : ι → α => f (values i)) = mean f := by
+  have hh := mean_equiv (Equiv.piSplitAt i (fun _ => α)) (fun p => f p.1)
+  rw [mean_prod] at hh
+  simpa only [Equiv.piSplitAt,Equiv.coe_fn_mk,mean_const] using hh
 
 /-- Markov's inequality, in a form that also allows a zero threshold. -/
 theorem markov (f : α → ℝ) (hf : ∀ a, 0 ≤ f a) :

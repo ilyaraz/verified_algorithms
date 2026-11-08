@@ -10,6 +10,8 @@ open WordRam
 /-- Odd seeds at positive width w+1 have exactly 2^w indices. -/
 abbrev Seed (w : Nat) := Fin (Nat.pow 2 w)
 
+instance seedNonempty (w : Nat) : Nonempty (Seed w) := ⟨⟨0,Nat.two_pow_pos w⟩⟩
+
 /-- Runtime seed encoding uses the index's ordinary numeric value. -/
 def encode (a : Seed w) : Word (w+1) := word (w+1) (2*a.val+1)
 
