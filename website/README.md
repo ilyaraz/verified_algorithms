@@ -138,3 +138,13 @@ Inspect `PerfectHash.Source.Query.program`, `contract`, `execution`, and `spec` 
 follow the C-like query from table invariants to generated machine execution.
 Its 237-instruction bound includes helper calls and halt; its 28-word stack is
 separated from the retained dictionary, and every interrupted prefix is safe.
+
+## Reviewing the alternative source constructor
+
+Search for `PerfectHash.Source.Bounded.execution` and
+`PerfectHash.Source.Bounded.query_after_build`. Their dependencies connect the
+C-like program, compositional source contracts, generic compiler transfer,
+public entry adapter and retained representation. The source implementation
+remains under `Source/`; the original assembly certificate remains available.
+The source guide documents the new numerical bounds and explicit code-fit
+condition. Tests cover these proof paths as well as all source snapshots.

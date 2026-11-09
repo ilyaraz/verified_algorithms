@@ -100,5 +100,8 @@ inlining and full trace preservation. The separate [source perfect-hashing imple
 proves membership through ordinary helper calls, with at most 237 instructions
 and 28 stack words. Its construction components now verify sampling, rounding,
 deduplication, root/child trials, and allocation against the original models,
-with explicit instruction and stack bounds. The original assembly programs and
-proofs remain intact.
+with explicit instruction and stack bounds. The 1,720-instruction source bounded
+constructor preserves the original nine-register build interface and proves
+normal success or retry-budget failure, safe prefixes, fresh addressed samples,
+and queries after overwriting unretained storage. Its stack is inside the existing
+scratch reservation. The original assembly programs and proofs remain intact.

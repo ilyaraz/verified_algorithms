@@ -137,5 +137,76 @@ The fixtures cover duplicates, zero/maximum keys, dirty memory, root and child
 rejection, sibling preservation, and allocation with exactly 20 stack words
 versus 19. They check exact execution costs as well as results and effects.
 
-P2 bounded construction and P3 total successful construction remain next. The
-original assembly development and all its public proofs remain intact.
+## P2: bounded construction
+
+`Bounded.source` contains fifteen named functions, each emitted once. The public
+constructor accepts the original nine words: input base/count, output
+base/capacity, scratch base/capacity, random base/capacity, and width. It computes
+the distinct count and all parameters by ordinary calls. The selected seeds in
+the proofs describe actual sampled words; they are never runtime advice.
+
+The empty branch clears eight words and writes a complete empty descriptor with
+no random access. Nonempty input is rounded and deduplicated using one random
+seed. A capped root search accepts the first root meeting the existing energy
+bound, writes the header, and walks the directory. Each child is allocated,
+searched and completed before the next is touched. Empty and singleton children
+need no sample; larger children use their own capped block. Failure returns
+before consuming any later block.
+
+| Resource or interface | Verified value |
+| --- | --- |
+| Generated public code | 1,720 instructions |
+| Public register file | 64, with 16 embedded compiler registers |
+| Added width condition | `1720 < 2^w` |
+| Constructor frame | 30 words |
+| Live frames, empty / nonempty | at most 47 / 88 words |
+| Internal stack | scratch suffix after `6*(N+1)`, capacity `58*(N+1)` |
+| Fixed evaluator fuel | `100000*((N+1)^2 + (w+1)*(N+1))` |
+| Retained extent on success | at most `64*(d+1)` words |
+| Peak ordinary reservation including registers | `N + 128*(N+1) + 64`, at most `193*(N+1)` |
+| Random schedule | sublist of `1 + w*(rootSlots+1)` consecutive addresses |
+
+The original arithmetic and region assumptions are retained, with the explicit
+code-fit condition added. `canonical_admissible` proves nonvacuity using the old
+sufficient-width threshold. Every input key remains unrestricted, including
+zero and the maximum word. Stack storage is counted once inside scratch.
+
+On success, registers 0 and 1 return descriptor base and extent, register 2 the
+computed distinct count, and register 18 algorithm status one. Budget failure
+returns algorithm status zero and clears the descriptor/count. In both cases
+register 5 contains normal runtime status one. Runtime exhaustion is a separate
+outcome excluded by the source frame bound and compiler theorem.
+
+`Constructor.contract` is an independent source proof. `RootSpec` and
+`Children.SearchSpec` expose proved search behavior, costs and effects; they are
+instantiated by the concrete capped searches. `Children.loop_contract` preserves
+completed siblings, and `Partial.representation` transfers the completed memory
+to the existing query view. `Machine.execution` applies compiler simulation and
+charges the public setup and decode, including halt. `Public.execution` uses a
+proved injective register embedding. These theorems do not invoke the original
+assembly constructor's execution proofs.
+
+`Bounded.execution` gives the pointwise stopped-work bound and outcome for every
+random image. `prefix_safety` covers interrupted argument setup and all partial
+algorithm effects. `frame` preserves every cell outside output and scratch at
+any fuel. `random_reads` proves sample-address uniqueness and bounds reads by
+the reservation based on the distinct count. `query_after_build` permits arbitrary
+overwrite outside the retained descriptor and uses the released construction
+stack for the alternative constant-time query.
+
+The fresh schedule and instruction allowance include deduplication comparisons,
+all rejected trials, dirty-memory clearing, expression temporaries, ordinary
+calls and returns, branches, entry setup and final halt. The pointwise work bound
+remains sharper than the fixed fuel guard, retaining actual retry stopping times
+for the later expectation proof.
+
+Executable integration checks cover repeated keys (10,703 instructions), root
+budget failure (26,471), child budget failure (25,781), last-attempt success
+(32,610), empty input (355), a maximum-key singleton (1,567), all-equal input
+(4,529), and near-end reservations (2,736). They check the exact random schedule,
+public statuses, descriptor, distinct count, input preservation and queries after
+overwrite. The endpoint fixture has both scratch and random reservations ending
+at address 4,095 in a 12-bit address space.
+
+P3 total successful construction remains next. The original assembly development
+and all its public proofs remain intact.

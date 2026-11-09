@@ -161,7 +161,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L7 register-only backend | complete: checked straight-line subset, leaf-helper inlining, full trace preservation, no compiler memory, overlap/live-local proofs |
 | P0 alternative query | complete: C-like query and ordinary hash calls; exact membership, 237-instruction bound, 28 stack words, prefix safety and overwrite theorem |
 | P1 source construction components | complete: sampling, rounding, deduplication, root/child trials and allocation; model contracts, numerical costs, stack bounds and generated execution fixtures |
-| P2 source bounded constructor | pending |
+| P2 source bounded constructor | complete: source composition, original public build ABI, 1,720-instruction code, internal stack, success/failure, prefix safety, fixed fuel and query after overwrite |
 | P3 source total constructor | pending |
 
 After each completed milestone: run its checks, regenerate the Atlas with all
@@ -351,5 +351,28 @@ and packed child allocation. They reuse the original mathematical models and
 memory representations. Their proofs construct source executions; the generic
 compiler supplies the target simulation. All clearing, failed work, searches,
 call frames and temporary locals are charged. See the source perfect-hashing
-guide for exact component bounds and generated-code fixtures. P2 and P3 compose
-these components into bounded and total successful construction.
+guide for exact component bounds and generated-code fixtures. P2 composes
+these components into bounded construction; P3 adds total successful construction.
+
+## P2 bounded source construction
+
+The complete constructor is defined in `Source/Bounded/Program.lean` using named
+functions and ordinary calls. Its source contract composes preparation, capped
+root search, packed allocation and capped child search. A separate empty branch
+initializes its eight retained words without sampling. Shared abstract search
+contracts prepare the same orchestration for P3 fallback.
+
+The public adapter preserves the original nine arguments and descriptor/status
+registers. Generic register embedding and a nonrelocating entry adapter connect
+this interface to the verified compiler. Generated code has 1,720 instructions;
+`Source.Bounded.Admissible` explicitly adds `1720 < 2^w`. The original sufficient
+width theorem remains sufficient. Stack lies after the first `6*(N+1)` scratch
+words, within the original `64*(N+1)` reservation. The source contract bounds
+simultaneous frames by 47 words for empty input and 88 otherwise.
+
+Theorems cover every random image, normal success or justified budget failure,
+full access policies for every interrupted prefix, absence of faults, memory
+preservation, unique addressed samples, retained space, pointwise work and a
+fixed fuel guard. Query after successful construction reuses the released stack
+and allows arbitrary overwrite outside the retained descriptor. P3 adds fallback
+and expected instructions to successful construction; P2 does not claim either.

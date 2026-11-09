@@ -58,6 +58,16 @@ class WebsiteTests(unittest.TestCase):
             self.assertIn(edge, self.edges)
         self.assertEqual(self.nodes["PerfectHash.Export.source"]["module"], "PerfectHashTools.Export")
 
+    def test_source_constructor_proof_paths(self):
+        for edge in [
+            ("PerfectHash.Source.Constructor.contract", "PerfectHash.Source.Bounded.execution"),
+            ("PerfectHash.Source.Public.execution", "PerfectHash.Source.Bounded.execution"),
+            ("WordRam.TerminatesIn.rename", "PerfectHash.Source.Public.execution"),
+            ("RamLang.Compiler.withEntry_evaluation", "PerfectHash.Source.Entry.invoke"),
+            ("PerfectHash.Source.Bounded.successful_representation", "PerfectHash.Source.Bounded.query_after_build"),
+        ]:
+            self.assertIn(edge, self.edges)
+
     def test_edges_and_reverse_index_agree(self):
         for e in self.graph["edges"]:
             a, b = e["source"], e["target"]

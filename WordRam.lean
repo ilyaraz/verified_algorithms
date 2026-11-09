@@ -15,3 +15,4 @@ import WordRam.BoundedRetry
 import WordRam.DeterministicSearch
 import WordRam.Footprint
 import WordRam.Calls
+import WordRam.RegisterEmbedding

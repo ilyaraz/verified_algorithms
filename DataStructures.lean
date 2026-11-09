@@ -12,3 +12,4 @@ import DataStructures.PerfectHash.Total.Contract
 import DataStructures.PerfectHash.Certified
 import DataStructures.PerfectHash.Source.Query.Examples
 import DataStructures.PerfectHash.Source.Components
+import DataStructures.PerfectHash.Source.Bounded.Examples

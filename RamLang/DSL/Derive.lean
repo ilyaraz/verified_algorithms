@@ -82,7 +82,7 @@ elab_rules : tactic
         | apply RamLang.Evaluation.call
           · first | assumption | rfl
           · rfl
-          · rfl
+          · first | assumption | (symm; assumption) | rfl
           · first | assumption | (conv => lhs; reduce); omega
           · ram_derive ($test)
           · rfl))

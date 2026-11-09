@@ -15,3 +15,7 @@ import RamLang.Library
 import RamLang.RegisterOnly
 import RamLang.Logic.EarlyReturn
 import RamLang.Logic.Reprogram
+import RamLang.Compiler.Metadata
+import RamLang.Compiler.ExternalEntry
+import RamLang.Compiler.EntryRegisters
+import RamLang.Library.Search
