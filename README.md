@@ -92,5 +92,7 @@ compiler, and proofs. Finite source derivations transfer to exact target
 instruction counts, application traces, and stack bounds, including exhaustion.
 Productive loop certificates also establish infinite target runs with bounded
 stack use. Total source contracts prove recursive sum and iterative array fill,
-including instruction bounds, stack use, and memory preservation. The C-like DSL
-and separate perfect-hashing ports remain subsequent milestones.
+including instruction bounds, stack use, and memory preservation. The
+[C-like DSL](docs/ramlang-dsl.md) supports named recursive functions, rich
+expressions, diagnostics, and verified fill/copy/traversal/retry routines. The
+register-only backend and separate perfect-hashing ports are subsequent milestones.

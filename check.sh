@@ -10,6 +10,9 @@ cd "$task_root"
 ./lake env lean RamLang/Compiler/Examples.lean
 ./lake env lean RamLang/Compiler/Proofs/Examples.lean
 ./lake env lean RamLang/Logic/Examples.lean
+./lake env lean RamLang/DSL/Diagnostics.lean
+./lake env lean RamLang/DSL/Examples.lean
+./lake env lean RamLang/Library/Examples.lean
 # Reexecute integration fixtures even when their compiled modules are cached.
 ./lake env lean -s 131072 DataStructures/PerfectHash/Total/Examples.lean
 scripts/check_exports.sh

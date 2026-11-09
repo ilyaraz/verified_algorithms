@@ -157,7 +157,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L3 recursive compiler | complete: deterministic two-pass compilation, frame/code metadata, boundary executions |
 | L4 simulation and resources | complete: source derivation soundness, linked simulation, exact instructions, stack peaks, exhaustion, prefix safety, productive loops |
 | L5 source logic | complete: total contracts, decreasing loops, self/mutual contract induction, memory frames, recursive sum and iterative fill proofs |
-| L6 DSL and generic routines | pending |
+| L6 DSL and generic routines | complete: checked C-like syntax, diagnostics, proof tactics, code reports, fill/copy/traversal/retry contracts |
 | L7 register-only backend | pending |
 | P0 alternative query | pending |
 | P1 source construction components | pending |
@@ -260,3 +260,28 @@ access policy of every interrupted prefix. It accepts arbitrary initial memory
 and proves the pointer/count arithmetic does not wrap. The compiled programs
 have 65 and 50 instructions respectively. Exact-fit and empty-array fixtures
 also execute the generic fill, including maximum word values and dirty memory.
+
+## L6 C-like programs and reusable library
+
+The [language guide](ramlang-dsl.md) documents `ram_program entry { fn ... }`,
+named mutable locals, lexical blocks, forward/self/mutual calls, explicit memory
+effects, and rich expressions evaluated left to right. Expression temporaries
+are charged caller-owned slots. Rich loop tests are reevaluated on every test.
+Elaboration emits an ordinary core constructor term after the existing checker
+accepts it. The DSL sum and fill are definitionally equal to the verified L5
+cores. Diagnostic fixtures check names, arities, scope, initialization, and returns.
+
+`ram_simp`, `ram_primitive`, and `ram_cost` produce ordinary kernel-checked proof
+terms. `report` displays linked code addresses, ranges, and frame sizes. No
+annotation supplies a runtime value or an uncharged computation.
+
+The generic library adds disjoint array copy through the traversal rule, with
+at most `33*n+30` target instructions and six stack words. `Retry.contract`
+supports early-returning attempts, including recursive attempts with contracts,
+and charges `(trialWork+5)*n+12` for the source body. It records exactly one
+explicit random address per attempt and proves address freshness under a
+representable reservation. These execution rules have no probability imports.
+The C-like first-nonzero example transfers that rule to a compiled program with
+at most `28*n+28` instructions and five stack words, distinguishing budget failure
+from runtime exhaustion. Copy, retry, nested calls, mutual calls, and rich loop
+tests have kernel-checked execution fixtures in addition to the general proofs.

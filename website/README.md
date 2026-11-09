@@ -120,3 +120,9 @@ For source verification, inspect `RamLang.Logic.while_total`,
 `RamLang.Logic.Sum.compiled_correct` proves exact recursive time and stack use;
 `RamLang.Logic.Fill.compiled_correct` transfers an invariant-based array proof
 to the generated program, including memory preservation and prefix policies.
+
+The [C-like language guide](../docs/ramlang-dsl.md) is published as `ramlang-dsl.html`.
+Search for `RamLang.DSL.Examples.sum_core` to connect readable source with its
+verified core, `RamLang.Library.Copy.compiled_correct` for array traversal,
+and `RamLang.Library.FirstNonzero.compiled_correct` for bounded retry with a
+proved fresh sample schedule. `RamLang.report` displays the generated code.

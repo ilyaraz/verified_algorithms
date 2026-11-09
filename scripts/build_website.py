@@ -175,7 +175,7 @@ def mask_comments(source: str) -> str:
 
 def authored_declarations():
     declarations = []
-    pattern = re.compile(r"^(?:@\[[^\n]*\]\s*)?(?:(private|protected|noncomputable)\s+)?"
+    pattern = re.compile(r"^(?:@\[[^\n]*\]\s*)?(?:(private|protected|noncomputable|partial)\s+)?"
                          r"(abbrev|def|theorem|lemma|structure|inductive|instance|opaque|axiom|class|example)\b\s*([^\s(:{]+)?")
     for file in FILES:
         source = (ROOT / file).read_text()
@@ -183,7 +183,7 @@ def authored_declarations():
         for line, text in enumerate(mask_comments(source).splitlines(), 1):
             if text.startswith("namespace "):
                 namespace.append(text.split()[1])
-            elif re.match(r"(?:noncomputable )?section\b", text):
+            elif re.match(r"(?:(?:noncomputable )?section|mutual)\b", text):
                 namespace.append("")
             elif re.match(r"end\b", text) and namespace:
                 namespace.pop()
@@ -327,16 +327,21 @@ def main():
     # A classic script keeps file:// browsing functional, without fetch or a CDN.
     (OUT / "graph-data.js").write_text("window.LEAN_GRAPH = " + json.dumps(data, ensure_ascii=False).replace("</", "<\\/") + ";\n")
     render_sources()
-    contract = (ROOT / "docs/ramlang-contract.md").read_text()
-    (OUT / "ramlang.html").write_text(
-        '<!doctype html><html lang="en"><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        '<title>RamLang milestones · Lean Atlas</title>'
-        '<link rel="stylesheet" href="source.css">'
-        '<header><a href="index.html">← Lean Atlas</a>'
-        '<strong>Structured word-RAM language</strong></header>'
-        '<main><pre style="white-space:pre-wrap;line-height:1.7;max-width:90ch;margin:auto">'
-        + html.escape(contract) + '</pre></main></html>')
+    for source, target, title in [
+        ("ramlang-contract.md", "ramlang.html", "Structured word-RAM milestones"),
+        ("ramlang-dsl.md", "ramlang-dsl.html", "Writing and verifying RamLang programs"),
+    ]:
+        document = (ROOT / "docs" / source).read_text()
+        (OUT / target).write_text(
+            '<!doctype html><html lang="en"><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            f'<title>{html.escape(title)} · Lean Atlas</title>'
+            '<link rel="stylesheet" href="source.css">'
+            '<header><a href="index.html">← Lean Atlas</a>'
+            '<a href="ramlang.html">Milestones</a><a href="ramlang-dsl.html">C-like language guide</a>'
+            f'<strong>{html.escape(title)}</strong></header>'
+            '<main><pre style="white-space:pre-wrap;line-height:1.7;max-width:90ch;margin:auto">'
+            + html.escape(document) + '</pre></main></html>')
     print(f"Built {OUT}: {len(nodes)} declarations, {len(edges)} dependency edges, {len(FILES)} source modules.")
 
 
