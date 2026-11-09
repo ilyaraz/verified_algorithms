@@ -91,4 +91,6 @@ integration. Import `RamLang` for the checked core, source evaluator, recursive
 compiler, and proofs. Finite source derivations transfer to exact target
 instruction counts, application traces, and stack bounds, including exhaustion.
 Productive loop certificates also establish infinite target runs with bounded
-stack use. The source logic and C-like DSL are the next milestones.
+stack use. Total source contracts prove recursive sum and iterative array fill,
+including instruction bounds, stack use, and memory preservation. The C-like DSL
+and separate perfect-hashing ports remain subsequent milestones.

@@ -156,7 +156,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L2 independent source semantics | complete: checker, source steps/evaluator, ideal-capacity correspondence, recursion examples |
 | L3 recursive compiler | complete: deterministic two-pass compilation, frame/code metadata, boundary executions |
 | L4 simulation and resources | complete: source derivation soundness, linked simulation, exact instructions, stack peaks, exhaustion, prefix safety, productive loops |
-| L5 source logic | pending |
+| L5 source logic | complete: total contracts, decreasing loops, self/mutual contract induction, memory frames, recursive sum and iterative fill proofs |
 | L6 DSL and generic routines | pending |
 | L7 register-only backend | pending |
 | P0 alternative query | pending |
@@ -228,3 +228,35 @@ The theorem-based fixtures prove a nineteen-instruction return from dirty RAM
 and a genuinely infinite loop with a two-word stack. All source and compiler
 proofs pass the project axiom audit. The source logic, C-like DSL, and alternative
 perfect-hashing proofs remain subsequent milestones.
+
+## L5 source verification
+
+`RamLang.Logic.Contract` describes a total source execution, a postcondition on
+its outcome, memory and application trace, and separate instruction/stack bounds.
+`sequence` adds time and takes the maximum of stack peaks. `call` checks the
+callee, arguments, arity, capacity, return value, and caller destination; it adds
+the verified argument/call overhead and the callee frame. Early returns and
+exhaustion propagate through `sequenceStop` without charging discarded code.
+
+`while_total` proves termination using a decreasing natural ghost measure and an
+invariant. Its time potential pays for every condition, iteration, and back edge;
+its access policy composes over the complete application trace. `recursion` and
+`mutual_recursion` discharge contract families by strict well-founded rank
+decrease, including calls between different function identifiers. These are proof
+rules, with no runtime rank or recursion fuel. `Evaluation.frame` derives memory
+preservation from the absence of writes in the source trace.
+
+`Contract.sourceReturns` gives an independent ideal source execution, while
+`Contract.compiled` transfers the same proof to the generated program and adds
+the public wrapper and entry frame. No verification-condition generator is
+introduced here, so there is no additional trusted proof automation.
+
+The general non-tail sum theorem proves exactly `43*n + 25` instructions and a
+peak of `5*(n+1)` words, preserving application memory. Its input counter must
+fit in a word; the triangular-sum result may wrap. The array-fill proof uses
+`while_total` and proves at most `22*n + 30` instructions, five stack words,
+every requested array value, preservation outside the array and stack, and the
+access policy of every interrupted prefix. It accepts arbitrary initial memory
+and proves the pointer/count arithmetic does not wrap. The compiled programs
+have 65 and 50 instructions respectively. Exact-fit and empty-array fixtures
+also execute the generic fill, including maximum word values and dirty memory.

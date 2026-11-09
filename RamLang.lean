@@ -9,3 +9,4 @@ import RamLang.Compiler.Link
 import RamLang.Compiler.Examples
 import RamLang.Capacity
 import RamLang.Compiler.Proofs.Examples
+import RamLang.Logic

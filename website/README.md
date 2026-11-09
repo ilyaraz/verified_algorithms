@@ -114,3 +114,9 @@ Source derivations yield exact target instruction costs, application traces,
 intermediate stack bounds, exhaustion behavior, and interrupted-prefix safety.
 The theorem-based fixtures in `RamLang.Compiler.ProofExamples` exercise these
 results from dirty RAM without expanding a target execution by computation.
+
+For source verification, inspect `RamLang.Logic.while_total`,
+`RamLang.Logic.Contract.call`, and `RamLang.Logic.Contract.compiled`.
+`RamLang.Logic.Sum.compiled_correct` proves exact recursive time and stack use;
+`RamLang.Logic.Fill.compiled_correct` transfers an invariant-based array proof
+to the generated program, including memory preservation and prefix policies.
