@@ -60,6 +60,11 @@ caller-owned frame slots, survive calls, and contribute to frame size and
 instruction costs. Assignments such as `n = n - 1` lower directly to their
 primitive operation without an extra temporary move.
 
+A call may also be a statement: `fill(base, count, 0);`. Its result is discarded
+after return, while its generated temporary, call work, and effects remain charged.
+Statement calls receive the same name, arity, and initialization checks as calls
+in expressions.
+
 A rich loop condition is evaluated before entry and again after each continuing
 iteration. For example, `while (load(p) != 0) { store(p, load(p) - 1); }` rereads
 memory for every test. Early return discards the surrounding loop and pending
@@ -168,3 +173,10 @@ or early-return propagation. It does not replace a loop invariant or supply
 mathematical assumptions. The source membership query in
 `DataStructures/PerfectHash/Source/Query/SourceProof.lean` uses it to keep table
 invariants separate from routine local-variable and call bookkeeping.
+
+The derivation tactic can reuse a supplied callee or loop derivation from a
+source contract. `while_total_return` supports loops whose bodies can either
+continue with a decreasing measure or return early. `Contract.sequence_cases`
+composes those outcomes. For a call-free routine, `Contract.reprogram` transfers
+its contract into a larger function table with identical time and stack charges;
+this is how the construction components reuse the generic fill routine.

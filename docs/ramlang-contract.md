@@ -160,7 +160,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L6 DSL and generic routines | complete: checked C-like syntax, diagnostics, proof tactics, code reports, fill/copy/traversal/retry contracts |
 | L7 register-only backend | complete: checked straight-line subset, leaf-helper inlining, full trace preservation, no compiler memory, overlap/live-local proofs |
 | P0 alternative query | complete: C-like query and ordinary hash calls; exact membership, 237-instruction bound, 28 stack words, prefix safety and overwrite theorem |
-| P1 source construction components | pending |
+| P1 source construction components | complete: sampling, rounding, deduplication, root/child trials and allocation; model contracts, numerical costs, stack bounds and generated execution fixtures |
 | P2 source bounded constructor | pending |
 | P3 source total constructor | pending |
 
@@ -341,3 +341,15 @@ unchanged. Width and stack requirements are explicit and feasible at width eight
 
 See [the source perfect-hashing guide](perfect-hashing-source.md) for the public
 interface, exact numerical bounds, proof structure, and boundary fixtures.
+
+
+## P1 source construction components
+
+The separate source folders now contain complete callable contracts for sampling,
+rounding, chain search, deduplication, root grouping trials, child insertion trials,
+and packed child allocation. They reuse the original mathematical models and
+memory representations. Their proofs construct source executions; the generic
+compiler supplies the target simulation. All clearing, failed work, searches,
+call frames and temporary locals are charged. See the source perfect-hashing
+guide for exact component bounds and generated-code fixtures. P2 and P3 compose
+these components into bounded and total successful construction.

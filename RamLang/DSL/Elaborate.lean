@@ -129,6 +129,9 @@ partial def statement (stx : Syntax) : Build (List Stmt) := do
     let (xs,a) ← expression address
     let (ys,v) ← expression value
     return xs++ys++[.primitive (.store a v)]
+  | `(ramStmt| $name:ident($args:ramExpr,*);) =>
+    let (setup,_) ← expression (← `(ramExpr| $name:ident($args:ramExpr,*)))
+    return setup
   | `(ramStmt| return $value:ramExpr;) =>
     let (setup,a) ← expression value
     return setup++[.ret a]

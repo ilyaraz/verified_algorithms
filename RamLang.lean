@@ -13,3 +13,5 @@ import RamLang.Logic
 import RamLang.DSL
 import RamLang.Library
 import RamLang.RegisterOnly
+import RamLang.Logic.EarlyReturn
+import RamLang.Logic.Reprogram

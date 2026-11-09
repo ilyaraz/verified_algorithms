@@ -31,6 +31,7 @@ syntax "let " ident ";" : ramStmt
 syntax ident " = " ramExpr ";" : ramStmt
 syntax "store" "(" ramExpr "," ramExpr ")" ";" : ramStmt
 syntax "return " ramExpr ";" : ramStmt
+syntax ident "(" ramExpr,* ")" ";" : ramStmt
 syntax "if " "(" ramCond ")" "{" ramStmt* "}" "else " "{" ramStmt* "}" : ramStmt
 syntax "if " "(" ramCond ")" "{" ramStmt* "}" : ramStmt
 syntax "while " "(" ramCond ")" "{" ramStmt* "}" : ramStmt

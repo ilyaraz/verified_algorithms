@@ -96,6 +96,9 @@ including instruction bounds, stack use, and memory preservation. The
 [C-like DSL](docs/ramlang-dsl.md) supports named recursive functions, rich
 expressions, diagnostics, and verified fill/copy/traversal/retry routines. The
 register-only backend verifies a checked straight-line subset with helper
-inlining and full trace preservation. The separate [source perfect-hashing query](docs/perfect-hashing-source.md)
+inlining and full trace preservation. The separate [source perfect-hashing implementation](docs/perfect-hashing-source.md)
 proves membership through ordinary helper calls, with at most 237 instructions
-and 28 stack words. Its original assembly counterpart and proofs remain intact.
+and 28 stack words. Its construction components now verify sampling, rounding,
+deduplication, root/child trials, and allocation against the original models,
+with explicit instruction and stack bounds. The original assembly programs and
+proofs remain intact.

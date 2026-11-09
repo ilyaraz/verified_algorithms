@@ -41,3 +41,10 @@ commands assert diagnostics without adding invalid programs to the library. -/
 /-- error: entry function has 5 parameters; the public ABI supports at most 4 -/
 #guard_msgs in
 #check ram_program main { fn main(a,b,c,d,e) { return a; } }
+
+/-- error: function 'helper' expects 1 arguments, got 0 -/
+#guard_msgs in
+#check ram_program main {
+  fn main() { helper(); return 0; }
+  fn helper(x) { return x; }
+}

@@ -20,6 +20,10 @@ syntax "ram_derive" "(" tacticSeq ")" : tactic
 
 elab_rules : tactic
   | `(tactic| ram_derive ($test:tacticSeq)) => withMainContext do
+    try
+      evalTactic (← `(tactic| assumption))
+      return
+    catch _ => pure ()
     let goal ← getMainGoal
     let target ← whnf (← goal.getType)
     let args := target.getAppArgs
@@ -76,10 +80,10 @@ elab_rules : tactic
     | some ``Stmt.call => evalTactic (← `(tactic|
         first
         | apply RamLang.Evaluation.call
+          · first | assumption | rfl
           · rfl
           · rfl
-          · rfl
-          · (conv => lhs; reduce); omega
+          · first | assumption | (conv => lhs; reduce); omega
           · ram_derive ($test)
           · rfl))
     | _ => throwError "ram_derive supports primitives, calls, conditionals and returns; use a loop contract for while"

@@ -2,8 +2,8 @@
 
 The alternative implementation lives in `DataStructures/PerfectHash/Source/`.
 The original assembly programs, public contracts, and proofs are unchanged.
-Reusable hash functions live in `Hashing/Source/`; construction components will
-also use `Algorithms/Dedup/Source/`.
+Reusable hash functions live in `Hashing/Source/`; reusable deduplication
+components live in `Algorithms/Dedup/Source/`.
 
 ## P0: membership query
 
@@ -77,6 +77,65 @@ a newly supplied valid stack. The fixtures cover zero and maximum keys, exact-fi
 stack space near the end of memory, an empty retained extent ending at the last
 fitting address, and the overwrite theorem for every key.
 
-P1 construction components, P2 bounded construction, and P3 total successful
-construction are the next milestones. They will remain in the separate source
-folders and retain the existing mathematical models and reference proofs.
+## P1: callable construction components
+
+All components are written in the C-like DSL. Their contracts quantify over an
+enclosing program with the required helper entries, so the constructor can share
+one copy of each helper. Rounding uses entry 1, fill entry 2, and chain search
+entry 4. The leaf helpers have no calls. Statement-style calls such as
+`fill(directory, 4 * buckets, 0);` make discarded results explicit without
+introducing artificial source variable names.
+
+| Callable body | Instruction allowance | Own frame | Additional live stack |
+| --- | --- | --- | --- |
+| Odd seed sampler | 32 | 7 | 0 |
+| Power-of-two rounding | `19 * bits(n) + 22` | 6 | 0 |
+| Full-key chain search | `55 * scanComparisons + 12` | 10 | 0 |
+| Deduplication pass | `300 * (N + m + 1) + 55 * comparisons` | 26 | 10 |
+| Root trial | `300 * (N + m + 1)` | 29 | 5 |
+| Child trial | `200 * (q + b + 1)` | 21 | 5 |
+| Child allocation | `160 + 19 * bits(2*b*b)` | 14 | 6 |
+
+These are **body** bounds, including return, with argument transfer and call setup
+charged by the enclosing call rule. `N` counts input occurrences, `m` is the
+number of root/head buckets, `q` is a child's slot count, and `b` its chain length
+or cardinality. `bits` is the existing power-of-two rounding model. Stack columns
+combine by adding the caller's frame to the maximum nested peak, rather than
+summing historical calls. Width and region-fit hypotheses are explicit.
+
+`Sampling.contract` connects one addressed random read and ordinary word
+arithmetic to the existing odd-seed encoding. `Rounding.contract` executes the
+doubling loop and writes the resulting shift. `Search.contract` compares complete
+keys along one-based links, returning early on a match; its cost uses the probes
+actually made. `Pass.contract` initializes dirty head cells, invokes search,
+inserts only absent keys, and produces `Dedup.collect` and `Dedup.Representation`.
+Its cost retains `Dedup.comparisons` for later expectation analysis. Sampling and
+rounding are separate constructor calls, not ghost inputs replacing runtime work.
+
+`Root.contract` clears the directory and implements `groupAccepted`. Each
+increment `2 * oldCount + 1` fits by a linear bound and is checked before
+subtraction or insertion; a rejected trial never computes a potentially
+unrepresentable full energy. Success establishes `Construction.Grouped` through
+the existing four-store insertion model. `Child.contract` clears its own table,
+follows the linked chain, and implements `childAccepted` and `SlotsAt`. It rejects
+at the first occupied slot and preserves every cell outside its own table,
+including completed siblings. Occupancy is separate from the complete key.
+`Allocation.contract` invokes rounding when needed and initializes exactly the
+shift and table-pointer fields, preserving count, head and neighboring tables.
+
+The contracts provide exact effects or access policies, with source framing
+available through `Evaluation.frame_of_policy`. All component trial reads are
+deterministic once the seed is supplied; only sampling reads random memory.
+Ordinary algorithm rejection returns zero with normal runtime status. Stack
+exhaustion has its separate runtime status and is ruled out by the frame bounds.
+
+`Components.lean` checks the actual generated programs. Configuration-reading
+drivers exercise helpers with more than four parameters; these drivers are
+component fixtures, not a new constructor calling convention. Their generated
+code sizes are 349 (root), 264 (child), 423 (deduplication), and 154 (allocation).
+The fixtures cover duplicates, zero/maximum keys, dirty memory, root and child
+rejection, sibling preservation, and allocation with exactly 20 stack words
+versus 19. They check exact execution costs as well as results and effects.
+
+P2 bounded construction and P3 total successful construction remain next. The
+original assembly development and all its public proofs remain intact.
