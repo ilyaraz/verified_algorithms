@@ -109,3 +109,10 @@ odd-seed fallback and proves success for every random image, expected linear
 actual instruction work, linear retained/peak space, and the same constant-time
 query. All L0–L7 and P0–P3 milestones are complete. The original assembly programs
 and proofs remain intact.
+
+For an independent reimplementation, start with the self-contained
+[word-RAM, assembly, DSL, and compiler hand-off](docs/clean-room-word-ram.md).
+The [perfect-hashing hand-off](docs/clean-room-perfect-hashing.md) builds only on
+that note and includes the additional mathematics, algorithms, proof interfaces,
+and resource analysis. Both leave ABI layouts and compiler-specific constants
+open to redesign.
