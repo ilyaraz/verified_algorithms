@@ -1,0 +1,138 @@
+import DataStructures.PerfectHash.Source.Children.Spec
+import DataStructures.PerfectHash.Source.Total.Search
+import DataStructures.PerfectHash.Source.Total.Model
+import DataStructures.PerfectHash.Total.ChildStage
+
+namespace PerfectHash.Source.Total
+open WordRam RamLang RamLang.Compiler RamLang.Logic PerfectHash.Bounded
+set_option maxRecDepth 65536
+set_option maxHeartbeats 5000000
+
+/-- The majorant charges source execution for every reached trial and for direct children. -/
+def searchWork (xs : List (Word w)) (l : Layout) (a : Word w)
+    (rho : RandomMemory w) (b : Fin (rootSlots xs)) : Nat :=
+  100*PerfectHash.Total.childTrialWork xs l a b rho+100
+
+/-- The total source search instantiates the common orchestration interface
+for every admissible root and every dirty current-child table. -/
+theorem child_search_spec {w : Nat} (p : RamLang.Program) (rho : RandomMemory w)
+    (xs : List (Word w)) (l : Layout) (a : Word w) (ha : Admissible w xs.length l)
+    (hy : rootAccepted xs a = true)
+    (hsample : p.functions[3]? = some Hashing.Source.Sampling.function)
+    (hchild : p.functions[7]? = some Source.Child.function)
+    (hfill : p.functions[2]? = some RamLang.Logic.Fill.function)
+    (hsearch : p.functions[10]? = some childFunction) :
+    Source.Children.SearchSpec p rho xs l a childFunction
+      (fun b => some (PerfectHash.Total.childSeed xs l a b rho)) (searchWork xs l a rho) := by
+  have hone : 1 < modulus w := by have := ha.arithmetic.linearSizes; omega
+  have hnonzero : word w 1 ≠ word w 0 := by
+    intro he
+    have := (word_eq_iff_of_lt hone (by omega : 0 < modulus w)).mp he
+    omega
+  refine ⟨hsearch,rfl,by decide,?_,?_⟩
+  · intro b seed he
+    cases he
+    by_cases hb : bucketCount xs a b ≤ 1
+    · simpa only [PerfectHash.Total.childSeed,hb,↓reduceIte] using hnonzero
+    · simp only [PerfectHash.Total.childSeed,hb,↓reduceIte]
+      exact selection_nonzero (by have := ha.arithmetic.positiveWidth; omega) rho _ _
+        (PerfectHash.Total.child_fallback_total ha hy b)
+  · intro free mem b hfree hchain
+    let ctx := childContext ha hy b
+    have hfit := bucket_fit ha hy b
+    have hhash (seed key : Word w) :
+        unsignedShiftRight (seed*key) (word w (Source.Allocation.shift w (bucketCount xs a b))) =
+          word w (childHash w (bucketCount xs a b) seed key) := by
+      rw [Source.Children.shift_eq]
+      unfold childHash
+      simp only [word,BitVec.ofNat_toNat,BitVec.setWidth_eq]
+    by_cases hb : bucketCount xs a b ≤ 1
+    · have hchoice : some (PerfectHash.Total.childSeed xs l a b rho) = some (word w 1) := by simp [PerfectHash.Total.childSeed,hb]
+      have hcost : 200*((bucketChain xs a b).length+2)+60 ≤ searchWork xs l a rho b := by
+        simp only [searchWork,PerfectHash.Total.childTrialWork,PerfectHash.Total.childBudget,hb,↓reduceIte,bucket_chain_length]
+        omega
+      by_cases hz : bucketCount xs a b = 0
+      · have hq : childCapacity xs a b = 0 := by simp [childCapacity,Sizes.childSlots,hb,hz]
+        have hc := Source.Search.Child.total_empty_contract (free := free) p rho mem (word w l.scratchBase)
+          (word w (Dedup.firstIndex (bucketChain xs a b)))
+          (word w (Packed.table l.outputBase (childCapacity xs a) b))
+          (word w (Source.Allocation.shift w (bucketCount xs a b))) (word w (childRandomBase l w b.val)) (word w w)
+        rw [hq]
+        apply hc.consequence
+        · rintro flow mem' log ⟨rfl,rfl,rfl⟩
+          refine ⟨by simp [hchoice],?_,by simp [AccessPolicy.AllowsTrace],by simp [RamLang.Library.Retry.randomAddresses]⟩
+          intro seed hs
+          rw [hchoice] at hs
+          cases hs
+          exact ⟨child_direct_accepted ha hb _,⟨by intro i hi; omega,by intro i hi; omega⟩⟩
+        · omega
+        · omega
+      · have hb1 : bucketCount xs a b = 1 := by omega
+        have hq : childCapacity xs a b = 1 := by simp [childCapacity,Sizes.childSlots,hb,hb1]
+        have hc := Source.Search.Child.total_singleton_contract (free := free) p rho mem
+          (childHash w (bucketCount xs a b) (word w 1))
+          (word w (Source.Allocation.shift w (bucketCount xs a b))) (word w (childRandomBase l w b.val)) (word w w)
+          (bucketChain xs a b) hchild hfill hfree hchain (bucket_indices b)
+          (fun key => by rw [child_hash_direct ha.arithmetic.widthValue hb]; omega) (hhash _)
+          ctx.node_fit (by simpa only [hq] using ctx.table_fit) (by simpa only [hq] using ctx.separated)
+          (child_direct_accepted ha hb _)
+        rw [hq]
+        apply hc.consequence
+        · rintro flow mem' log ⟨rfl,hslots,hchain',hp,hr⟩
+          refine ⟨by simp [hchoice],?_,?_,?_⟩
+          · intro seed hs
+            rw [hchoice] at hs
+            cases hs
+            exact ⟨child_direct_accepted ha hb _,hslots⟩
+          · intro e he
+            have hh := hp e he
+            cases e <;> first | exact hh | exact False.elim hh
+          · rw [hr]; simp
+        · exact hcost
+        · exact Nat.le_refl _
+    · have hq : 1 < childCapacity xs a b := by
+        have hl := Sizes.childSlots_covers (b := bucketCount xs a b) (by omega)
+        change 1 < Sizes.childSlots (bucketCount xs a b)
+        nlinarith
+      have hrandom : (Region.mk (childRandomBase l w b.val) w).Fits w := by
+        have hh := child_random_block (l := l) (w := w) (xs := xs) b
+        have hf : l.randomBase+randomCapacity w xs.length < modulus w := ha.random
+        exact lt_of_le_of_lt hh hf
+      obtain ⟨fallback,hfallback,_⟩ := PerfectHash.Total.child_fallback_total ha hy b
+      have hf : RamLang.Library.Search.choice (PerfectHash.Total.candidate w)
+          (Source.Search.Child.accept (childHash w (bucketCount xs a b)) (bucketChain xs a b))
+          0 (PerfectHash.Total.seedCount w) = some fallback := by
+        rw [Source.Search.child_accept,fallback_eq]; exact hfallback
+      have hselection : (RamLang.Library.Search.choice (Source.Search.Root.sample rho)
+          (Source.Search.Child.accept (childHash w (bucketCount xs a b)) (bucketChain xs a b))
+          (childRandomBase l w b.val) w).getD fallback = PerfectHash.Total.childSeed xs l a b rho := by
+        rw [Source.Search.child_accept,PerfectHash.Total.childSeed,if_neg hb]
+        exact selection_eq rho _ _ _ hfallback
+      have hc := Source.Search.Child.total_contract (free := free) p rho mem
+        (childHash w (bucketCount xs a b)) (word w (Source.Allocation.shift w (bucketCount xs a b)))
+        (bucketChain xs a b) hsample hchild hfill hfree hchain (bucket_indices b)
+        (fun seed key => child_hash_range ha.arithmetic.widthValue hfit.2 (by omega) seed key)
+        hhash ctx.node_fit ctx.table_fit ctx.separated hq hrandom fallback hf
+      apply hc.consequence
+      · rintro flow mem' log ⟨hf,hslots,hchain',hp,hr⟩
+        refine ⟨by simpa only [hselection,Option.getD_some] using hf,?_,hp,?_⟩
+        · intro seed hs
+          cases hs
+          exact ⟨PerfectHash.Total.child_seed_accepted ha hy b rho,by simpa only [hselection] using hslots⟩
+        · rw [hr,Source.Search.addresses_eq]
+          exact consecutiveAddresses_sublist w _ (RamLang.Library.Search.attempts_le _ _ _ _)
+      · rw [Source.Search.child_accept]
+        simp only [bucket_chain_length]
+        have hbudget : 200*(childCapacity xs a b+bucketCount xs a b+1)+155 ≤ 100*PerfectHash.Total.childBudget xs a b := by
+          unfold PerfectHash.Total.childBudget
+          omega
+        have hmul := Nat.mul_le_mul_right
+          (RamLang.Library.Search.attempts (Source.Search.Root.sample rho) (childAccepted xs a b) (childRandomBase l w b.val) w +
+            if (RamLang.Library.Search.choice (Source.Search.Root.sample rho) (childAccepted xs a b) (childRandomBase l w b.val) w).isNone
+              then PerfectHash.Total.seedCount w else 0) hbudget
+        conv at hmul => rhs; rw [Nat.mul_assoc,trial_work_eq]
+        simp only [searchWork,PerfectHash.Total.childTrialWork,hb,↓reduceIte]
+        exact (Nat.add_le_add_right hmul 40).trans (Nat.add_le_add_left (by decide : 40 ≤ 100) _)
+      · exact Nat.le_refl _
+
+end PerfectHash.Source.Total

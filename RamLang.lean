@@ -19,3 +19,4 @@ import RamLang.Compiler.Metadata
 import RamLang.Compiler.ExternalEntry
 import RamLang.Compiler.EntryRegisters
 import RamLang.Library.Search
+import RamLang.Library.Enumeration

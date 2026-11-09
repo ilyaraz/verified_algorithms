@@ -148,3 +148,12 @@ public entry adapter and retained representation. The source implementation
 remains under `Source/`; the original assembly certificate remains available.
 The source guide documents the new numerical bounds and explicit code-fit
 condition. Tests cover these proof paths as well as all source snapshots.
+
+For the completed total constructor, start at
+`PerfectHash.Source.Total.specification`, then inspect `execution`,
+`expected_instructions`, and `query_after_build`. The enumeration rule lives in
+`RamLang.Library.Enumeration.loop_contract`; its two source instantiations use
+finite successful candidate prefixes to prove termination without a runtime
+search bound. `Total.work_le_model` connects the source instruction allowance
+to the pure probability model. The Atlas tests require these source/compiler
+and expectation edges while retaining the original assembly proof paths.

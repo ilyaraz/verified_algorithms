@@ -104,4 +104,8 @@ with explicit instruction and stack bounds. The 1,720-instruction source bounded
 constructor preserves the original nine-register build interface and proves
 normal success or retry-budget failure, safe prefixes, fresh addressed samples,
 and queries after overwriting unretained storage. Its stack is inside the existing
-scratch reservation. The original assembly programs and proofs remain intact.
+scratch reservation. The 1,842-instruction total constructor adds deterministic
+odd-seed fallback and proves success for every random image, expected linear
+actual instruction work, linear retained/peak space, and the same constant-time
+query. All L0–L7 and P0–P3 milestones are complete. The original assembly programs
+and proofs remain intact.

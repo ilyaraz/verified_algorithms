@@ -208,5 +208,53 @@ public statuses, descriptor, distinct count, input preservation and queries afte
 overwrite. The endpoint fixture has both scratch and random reservations ending
 at address 4,095 in a 12-bit address space.
 
-P3 total successful construction remains next. The original assembly development
-and all its public proofs remain intact.
+## P3: total successful construction
+
+`Total.source` extends the two capped search functions with deterministic
+odd-seed enumeration. Each fallback starts at one, calls the ordinary root or
+child trial, returns on acceptance, and otherwise adds two. No seed array,
+uncharged oracle, or extra runtime bound is passed to the program. The source
+uses the same fifteen functions and retains the shared constructor, allocation,
+preparation, and table layout from P2.
+
+`Library.Enumeration.loop_contract` proves termination from a successful finite
+candidate prefix. The complete odd-multiplier set supplies that ghost prefix;
+the acceptance mathematics proves it contains a successful seed. Random search
+contracts expose their failure locals so enumeration continues from the actual
+post-state. The deterministic phase preserves compact input or linked nodes,
+initializes the successful trial, and makes zero random reads.
+
+| Resource or interface | Verified value |
+| --- | --- |
+| Generated public code | 1,842 instructions |
+| Added width condition | `1842 < 2^w` |
+| Live frames, empty / nonempty | at most 47 / 88 words, inside the original scratch reservation |
+| Expected actual instructions through successful halt | at most `10000000*(N+1)` |
+| Fixed evaluator fuel | `1000 * constructionFuel PerfectHash.Total.bounds w N` |
+| Retained extent | at most `64*(d+1)` words |
+| Peak ordinary reservation including registers | at most `193*(N+1)` words |
+| Query | at most 237 instructions, 28 stack words, zero random reads |
+
+The expectation constant is a conservative compiler bound, not a measured
+average. `Total.work_le_model` compares the complete source allowance with
+1,000 times the existing pure stopping-time model. Finite averaging transfers
+that pointwise inequality to the uniform random-memory law. The proof charges
+all occurrences during deduplication, rejected random attempts, the rare full
+fallback, dirty-memory initialization, call setup, returns, and halt. The
+image-independent fuel is an evaluator guard, never an algorithm argument.
+
+`Total.execution` establishes successful termination for every image.
+`Total.expected_instructions` bounds the steps of that actual compiled run.
+`Total.specification` packages total correctness, expectation, retained and peak
+space, and the alternative query contract. `Total.query_after_build` needs no
+success-status premise: it permits arbitrary overwrite outside the retained
+extent and reuses the released construction stack. The generated program's
+execution proof depends on the source contracts and compiler, while acceptance
+and probability lemmas reuse the original mathematical models.
+
+Integration fixtures force root fallback (32,127 instructions) and child fallback
+(11,003), check random and last-attempt success, and cover empty, singleton,
+all-equal and boundary inputs. Every fixture checks exact work and random
+addresses, public results, dirty-memory preservation, and membership after
+overwriting unretained storage. Original assembly exports and proofs remain
+intact. All milestones in the structured-language design are complete.

@@ -61,6 +61,13 @@ class WebsiteTests(unittest.TestCase):
     def test_source_constructor_proof_paths(self):
         for edge in [
             ("PerfectHash.Source.Constructor.contract", "PerfectHash.Source.Bounded.execution"),
+            ("PerfectHash.Source.Constructor.contract", "PerfectHash.Source.Total.execution"),
+            ("PerfectHash.Source.Public.execution", "PerfectHash.Source.Total.execution"),
+            ("RamLang.Library.Enumeration.loop_contract", "PerfectHash.Source.Search.Root.enumeration_contract"),
+            ("RamLang.Library.Enumeration.loop_contract", "PerfectHash.Source.Search.Child.enumeration_contract"),
+            ("PerfectHash.Source.Total.work_le_model", "PerfectHash.Source.Total.expected_work"),
+            ("PerfectHash.Source.Total.run_total", "PerfectHash.Source.Total.expected_instructions"),
+            ("PerfectHash.Source.Total.expected_instructions", "PerfectHash.Source.Total.specification"),
             ("PerfectHash.Source.Public.execution", "PerfectHash.Source.Bounded.execution"),
             ("WordRam.TerminatesIn.rename", "PerfectHash.Source.Public.execution"),
             ("RamLang.Compiler.withEntry_evaluation", "PerfectHash.Source.Entry.invoke"),

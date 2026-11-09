@@ -17,6 +17,7 @@ cd "$task_root"
 ./lake env lean -s 131072 DataStructures/PerfectHash/Source/Query/Examples.lean
 ./lake env lean -s 131072 DataStructures/PerfectHash/Source/Components.lean
 ./lake env lean -s 131072 DataStructures/PerfectHash/Source/Bounded/Examples.lean
+./lake env lean -s 131072 DataStructures/PerfectHash/Source/Total/Examples.lean
 # Reexecute integration fixtures even when their compiled modules are cached.
 ./lake env lean -s 131072 DataStructures/PerfectHash/Total/Examples.lean
 scripts/check_exports.sh

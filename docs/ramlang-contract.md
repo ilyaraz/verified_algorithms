@@ -162,7 +162,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | P0 alternative query | complete: C-like query and ordinary hash calls; exact membership, 237-instruction bound, 28 stack words, prefix safety and overwrite theorem |
 | P1 source construction components | complete: sampling, rounding, deduplication, root/child trials and allocation; model contracts, numerical costs, stack bounds and generated execution fixtures |
 | P2 source bounded constructor | complete: source composition, original public build ABI, 1,720-instruction code, internal stack, success/failure, prefix safety, fixed fuel and query after overwrite |
-| P3 source total constructor | pending |
+| P3 source total constructor | complete: deterministic fallback, success for every image, expected linear actual instructions, retained/peak space and stack-using constant-time query |
 
 After each completed milestone: run its checks, regenerate the Atlas with all
 new declarations and explanations, commit and push, and publish the existing
@@ -376,3 +376,31 @@ preservation, unique addressed samples, retained space, pointwise work and a
 fixed fuel guard. Query after successful construction reuses the released stack
 and allows arbitrary overwrite outside the retained descriptor. P3 adds fallback
 and expected instructions to successful construction; P2 does not claim either.
+
+## P3 total successful source construction
+
+`Source.Total.source` keeps the shared constructor and helper bodies and extends
+both capped searches with ordinary odd-seed enumeration. The source loop starts
+at one and increments by two; it has no runtime enumeration budget or seed
+array. `Library.Enumeration.loop_contract` uses a proved successful finite prefix
+as a ghost termination measure. It is a generic Std-only rule, with no hashing
+or probability imports. Every trial and update contributes to the target cost.
+
+The final public code has 1,842 instructions, so `Total.Admissible` requires
+`1842 < 2^w` in addition to the original layout/arithmetic conditions. Frames,
+internal scratch stack, public build ABI, and query ABI are unchanged from P2.
+`Total.execution` proves successful halt for every random-memory image;
+`prefix_safety` and `frame` cover interrupted executions as well. Deterministic
+fallback consumes no random cells. `Total.specification` packages the alternative
+public contract, preserving the original strict-read-only specification.
+
+`Total.work_le_model` bounds source instruction work by 1,000 times the existing
+pure stopping-time model. Its expectation theorem reuses only the mathematical
+probability analysis; target execution follows the new source contracts and
+compiler. Actual expected instructions are at most `10000000*(N+1)`, including
+deduplication, all rejected trials, exhaustive fallback, call traffic, and halt.
+Queries take at most 237 instructions and 28 stack words; retained memory is at
+most `64*(d+1)` and peak ordinary storage at most `193*(N+1)`.
+
+All L0–L7 and P0–P3 milestones are complete. The original perfect-hashing
+implementation and its proofs remain unchanged alongside these alternatives.

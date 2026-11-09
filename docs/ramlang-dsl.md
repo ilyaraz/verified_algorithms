@@ -117,6 +117,8 @@ The generic library contains:
 | Disjoint copy | `Library.Copy.program`, `compiled_correct` | `33*n + 30` | 6 words |
 | Traversal | `Library.Traversal.contract` | `(visitWork+5)*n+5` for the loop | supplied visit peak |
 | Bounded retry | `Library.Retry.contract` | `(trialWork+5)*n+12` for the body | supplied trial peak |
+| First-success search | `Library.Search.loop_contract` | `(trialWork+5)*attempts+5` for the loop | supplied trial peak |
+| Deterministic enumeration | `Library.Enumeration.loop_contract` | `(trialWork+4)*prefixLength` for the loop | supplied trial peak |
 | First nonzero sample | `Library.FirstNonzero.program`, `compiled_correct` | `28*n+28` | 5 words |
 
 Fill and copy initialize dirty memory and preserve cells outside their declared
@@ -180,3 +182,9 @@ continue with a decreasing measure or return early. `Contract.sequence_cases`
 composes those outcomes. For a call-free routine, `Contract.reprogram` transfers
 its contract into a larger function table with identical time and stack charges;
 this is how the construction components reuse the generic fill routine.
+
+The generic enumeration rule supports `while (1 != 0) { ... }` with early return.
+Its termination proof supplies a finite successful candidate prefix as a ghost
+measure. The executable loop has no extra bound or candidate array; candidate
+updates and predicate calls are ordinary charged source statements. The total
+perfect-hashing constructor uses this rule after capped random search.
