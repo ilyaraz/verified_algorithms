@@ -130,3 +130,30 @@ proofs import no probability or hashing modules.
 `report` displays linked instruction addresses, each function's code range and
 frame size, and the instruction array. These are computable code/layout reports;
 input-dependent execution bounds come from the source contracts above.
+
+## Register-only compilation
+
+`RegisterOnly.compile capacity program` is an alternative for a checked subset:
+straight-line entry functions may call straight-line helpers whose bodies have
+only primitives and a final return. Entry branches/loops, helper calls, and
+recursion are rejected with eligibility errors. The baseline compiler remains
+available for all those programs. Nested entry expressions `f(g(x))` are eligible
+when `f` and `g` themselves are eligible helpers.
+
+The argument is a budget of local registers; two additional registers hold the
+result and status. Caller slots precede a separate reusable helper interval.
+All arguments are copied before a helper starts, preserving repeated arguments,
+permutations, and caller locals across calls. A result may overwrite an argument.
+Insufficient register demand is rejected instead of silently aliasing slots.
+
+```lean
+#eval (RegisterOnly.compile 9 RegisterOnly.Examples.program).map
+  RegisterOnly.Compiled.report
+-- 15 instructions; 9/9 local registers; entry=5; helper=4; stack=0
+```
+
+`RegisterOnly.compiled_returns` preserves the full source trace and memory in
+exactly the emitted code length. `compiled_readOnly` additionally transfers a
+source no-write proof to every machine prefix. Neither theorem requires a stack
+region. `RegisterOnly.contract` transfers the source contract interface to this
+backend and retains the source access policy without extra memory permissions.

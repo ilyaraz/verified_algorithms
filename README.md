@@ -95,4 +95,5 @@ stack use. Total source contracts prove recursive sum and iterative array fill,
 including instruction bounds, stack use, and memory preservation. The
 [C-like DSL](docs/ramlang-dsl.md) supports named recursive functions, rich
 expressions, diagnostics, and verified fill/copy/traversal/retry routines. The
-register-only backend and separate perfect-hashing ports are subsequent milestones.
+register-only backend verifies a checked straight-line subset with helper
+inlining and full trace preservation. Separate perfect-hashing ports are next.

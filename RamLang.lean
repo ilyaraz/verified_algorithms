@@ -12,3 +12,4 @@ import RamLang.Compiler.Proofs.Examples
 import RamLang.Logic
 import RamLang.DSL
 import RamLang.Library
+import RamLang.RegisterOnly

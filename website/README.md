@@ -126,3 +126,9 @@ Search for `RamLang.DSL.Examples.sum_core` to connect readable source with its
 verified core, `RamLang.Library.Copy.compiled_correct` for array traversal,
 and `RamLang.Library.FirstNonzero.compiled_correct` for bounded retry with a
 proved fresh sample schedule. `RamLang.report` displays the generated code.
+
+`RamLang.RegisterOnly.compile` checks an alternate straight-line subset and its
+register budget. Its `compiled_returns` theorem preserves the full source trace;
+`compiled_readOnly` forbids writes at every target prefix for read-only source
+proofs. The overlap example verifies argument permutations and caller locals
+across inline calls in fifteen instructions without stack memory.

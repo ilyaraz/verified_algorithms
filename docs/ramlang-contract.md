@@ -158,7 +158,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L4 simulation and resources | complete: source derivation soundness, linked simulation, exact instructions, stack peaks, exhaustion, prefix safety, productive loops |
 | L5 source logic | complete: total contracts, decreasing loops, self/mutual contract induction, memory frames, recursive sum and iterative fill proofs |
 | L6 DSL and generic routines | complete: checked C-like syntax, diagnostics, proof tactics, code reports, fill/copy/traversal/retry contracts |
-| L7 register-only backend | pending |
+| L7 register-only backend | complete: checked straight-line subset, leaf-helper inlining, full trace preservation, no compiler memory, overlap/live-local proofs |
 | P0 alternative query | pending |
 | P1 source construction components | pending |
 | P2 source bounded constructor | pending |
@@ -285,3 +285,42 @@ The C-like first-nonzero example transfers that rule to a compiled program with
 at most `28*n+28` instructions and five stack words, distinguishing budget failure
 from runtime exhaustion. Copy, retry, nested calls, mutual calls, and rich loop
 tests have kernel-checked execution fixtures in addition to the general proofs.
+
+## L7 checked register-only alternative
+
+`RegisterOnly.compile capacity program` accepts straight-line entry bodies with
+primitive statements and calls to straight-line helpers. Helpers contain
+primitives and a final return, with no calls. Structured control, recursive
+helpers, and nested helper calls are rejected explicitly by this backend; the
+baseline compiler continues to support the complete source language. Entry
+expressions such as `f(g(x))` work when both helpers are eligible, because their
+left-to-right lowering produces sequential entry calls.
+
+This eligibility choice keeps the alternate backend useful for arithmetic,
+loads, and other fixed straight-line routines without constraining the main
+language. The user-authorized alternative perfect-hashing query will use the
+baseline compiler and a separated stack reservation, so P0 does not depend on
+extending register-only eligibility to branches.
+
+The alternate ABI uses `capacity+2` registers: result 0, status 1, caller locals
+from register 2, followed by a disjoint helper interval. The helper interval is
+reused by sequential calls. `Compiled.demand` is caller slots plus the largest
+helper slot count. Excess demand is an explicit compilation error. Arguments
+are copied before the inline body executes, so permutations, repeated arguments,
+and a result overwriting an argument preserve source behavior. Helpers need no
+saved link, stack header, or spill access.
+
+`compiled_returns` proves exact termination in `Compiled.code.size` instructions,
+including halt, with exactly the source trace and final application memory.
+`contract` transfers source contracts and their interrupted-prefix policies.
+`compiled_readOnly` proves unchanged memory and the absence of writes in every
+prefix for a read-only source proof. No stack reservation, stack initialization,
+or word-sized return-address premise appears in these theorems. The proofs
+operate on independent source derivations and the authoritative machine.
+
+The general overlap example uses nine local registers plus result/status and
+takes fifteen instructions at every word width. Its proof covers dirty initial
+registers, swapped/repeated arguments, an overwritten argument, and a caller
+local live across two calls. Further fixtures retain a real application load in
+the full target trace and check register shortage, recursion, and control-flow
+rejection. `Compiled.report` exposes instruction count and register demand.
