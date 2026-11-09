@@ -119,6 +119,8 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
 ]
 
 FILES += sorted(path.relative_to(ROOT) for path in (ROOT / "RamLang").rglob("*.lean"))
+for source_dir in ("Hashing/Source", "Algorithms/Dedup/Source", "DataStructures/PerfectHash/Source"):
+    FILES += sorted(path.relative_to(ROOT) for path in (ROOT / source_dir).rglob("*.lean"))
 
 def module_label(file):
     """Keep distinct labels for modules sharing a basename such as Specification."""
@@ -330,6 +332,7 @@ def main():
     for source, target, title in [
         ("ramlang-contract.md", "ramlang.html", "Structured word-RAM milestones"),
         ("ramlang-dsl.md", "ramlang-dsl.html", "Writing and verifying RamLang programs"),
+        ("perfect-hashing-source.md", "perfect-hashing-source.html", "Source perfect hashing"),
     ]:
         document = (ROOT / "docs" / source).read_text()
         (OUT / target).write_text(
@@ -339,7 +342,7 @@ def main():
             '<link rel="stylesheet" href="source.css">'
             '<header><a href="index.html">← Lean Atlas</a>'
             '<a href="ramlang.html">Milestones</a><a href="ramlang-dsl.html">C-like language guide</a>'
-            f'<strong>{html.escape(title)}</strong></header>'
+            f'<a href="perfect-hashing-source.html">Source perfect hashing</a><strong>{html.escape(title)}</strong></header>'
             '<main><pre style="white-space:pre-wrap;line-height:1.7;max-width:90ch;margin:auto">'
             + html.escape(document) + '</pre></main></html>')
     print(f"Built {OUT}: {len(nodes)} declarations, {len(edges)} dependency edges, {len(FILES)} source modules.")

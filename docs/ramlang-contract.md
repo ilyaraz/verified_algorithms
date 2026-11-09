@@ -159,7 +159,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L5 source logic | complete: total contracts, decreasing loops, self/mutual contract induction, memory frames, recursive sum and iterative fill proofs |
 | L6 DSL and generic routines | complete: checked C-like syntax, diagnostics, proof tactics, code reports, fill/copy/traversal/retry contracts |
 | L7 register-only backend | complete: checked straight-line subset, leaf-helper inlining, full trace preservation, no compiler memory, overlap/live-local proofs |
-| P0 alternative query | pending |
+| P0 alternative query | complete: C-like query and ordinary hash calls; exact membership, 237-instruction bound, 28 stack words, prefix safety and overwrite theorem |
 | P1 source construction components | pending |
 | P2 source bounded constructor | pending |
 | P3 source total constructor | pending |
@@ -324,3 +324,20 @@ registers, swapped/repeated arguments, an overwritten argument, and a caller
 local live across two calls. Further fixtures retain a real application load in
 the full target trace and check register shortage, recursion, and control-flow
 rejection. `Compiled.report` exposes instruction count and register demand.
+
+## P0 alternative membership query
+
+The first separate application is implemented in
+`DataStructures/PerfectHash/Source/Query/`, with its reusable helper in
+`Hashing/Source/MultiplyShift.lean`. The C-like program compiles to 237
+instructions and uses at most 237 actual instructions and 28 live stack words.
+The independent source proof reuses `Table.View`; compiler correctness supplies
+machine execution, runtime success, stack bounds, and safe interrupted prefixes.
+The new `Query.Spec` uses the ordinary RamLang ABI and permits separated stack
+writes as authorized. It preserves the retained dictionary and every other
+application cell, makes no random reads, and supports arbitrary overwrite of
+unretained construction storage. The original strict no-write query proof is
+unchanged. Width and stack requirements are explicit and feasible at width eight.
+
+See [the source perfect-hashing guide](perfect-hashing-source.md) for the public
+interface, exact numerical bounds, proof structure, and boundary fixtures.

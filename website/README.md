@@ -132,3 +132,9 @@ register budget. Its `compiled_returns` theorem preserves the full source trace;
 `compiled_readOnly` forbids writes at every target prefix for read-only source
 proofs. The overlap example verifies argument permutations and caller locals
 across inline calls in fifteen instructions without stack memory.
+
+The separate source perfect-hashing guide is published as `perfect-hashing-source.html`.
+Inspect `PerfectHash.Source.Query.program`, `contract`, `execution`, and `spec` to
+follow the C-like query from table invariants to generated machine execution.
+Its 237-instruction bound includes helper calls and halt; its 28-word stack is
+separated from the retained dictionary, and every interrupted prefix is safe.

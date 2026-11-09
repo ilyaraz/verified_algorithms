@@ -157,3 +157,14 @@ exactly the emitted code length. `compiled_readOnly` additionally transfers a
 source no-write proof to every machine prefix. Neither theorem requires a stack
 region. `RegisterOnly.contract` transfers the source contract interface to this
 backend and retains the source access policy without extra memory permissions.
+
+## Source derivation automation
+
+`ram_derive (branch_tactic)` constructs checked `Evaluation` terms for finite
+primitive/call/conditional code, including early returns. The branch tactic
+must prove the selected test; the derivation records actual template costs and
+callee frames. It infers the first statement's result before choosing sequence
+or early-return propagation. It does not replace a loop invariant or supply
+mathematical assumptions. The source membership query in
+`DataStructures/PerfectHash/Source/Query/SourceProof.lean` uses it to keep table
+invariants separate from routine local-variable and call bookkeeping.
