@@ -108,5 +108,9 @@ The ledger explicitly separates completed milestones from remaining work.
 
 For the executable baseline compiler, inspect `RamLang.Compiler.compile`,
 `RamLang.Compiler.compile_code_size`, and `RamLang.Compiler.Examples.sum_exact_fit`.
-The code-size theorem and finite examples do not claim the remaining general
-compiler state/trace/resource simulation.
+For the general compiler proofs, inspect `RamLang.Compiler.compile_evaluation`,
+`RamLang.Compiler.compiled_returns`, and `RamLang.Compiler.compiled_loop_diverges`.
+Source derivations yield exact target instruction costs, application traces,
+intermediate stack bounds, exhaustion behavior, and interrupted-prefix safety.
+The theorem-based fixtures in `RamLang.Compiler.ProofExamples` exercise these
+results from dirty RAM without expanding a target execution by computation.

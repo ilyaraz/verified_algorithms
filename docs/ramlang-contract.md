@@ -155,7 +155,7 @@ byte-for-byte equal to their certified definitions. `./check.sh` verifies this.
 | L1 ISA and compatibility | complete: `WordRam/Calls.lean`, checked relocation subset |
 | L2 independent source semantics | complete: checker, source steps/evaluator, ideal-capacity correspondence, recursion examples |
 | L3 recursive compiler | complete: deterministic two-pass compilation, frame/code metadata, boundary executions |
-| L4 simulation and resources | pending |
+| L4 simulation and resources | complete: source derivation soundness, linked simulation, exact instructions, stack peaks, exhaustion, prefix safety, productive loops |
 | L5 source logic | pending |
 | L6 DSL and generic routines | pending |
 | L7 register-only backend | pending |
@@ -192,5 +192,39 @@ instead reports runtime exhaustion after 108 instructions without accessing an
 out-of-reservation word. Two sequential calls reuse a 30-word reservation and
 return 20 in 423 instructions. These finite executions and code-size proofs do
 **not** constitute the general state/trace/resource simulation required by L4.
-The source logic, C-like DSL, and alternative perfect-hashing proofs remain
-subsequent milestones.
+The general proof is supplied separately by L4 below.
+
+## L4 checked compiler interface
+
+`Evaluation` is a finite, compositional derivation over the source syntax. It
+contains no target execution premise. `Evaluation.sound`, `invocationReturns`,
+and `ideal_returns` connect these derivations to the independent small-step
+semantics, including the ideal semantics without a capacity limit.
+
+`compile_evaluation` proves simulation for every such derivation, with the
+actual emitted code, exact `instructions` charge, application trace projection,
+and `extraStack` peak. Calls preserve live caller slots and initialize only
+parameters; uninitialized local slots may contain arbitrary initial memory.
+`compiled_returns`, `compiled_body_exhausts`, and `compiled_entry_exhausts`
+include the entry and termination wrappers. Entry exhaustion takes six
+instructions and performs no writes. Stack peaks bound the actual stack pointer
+at every intermediate machine state, including partially installed frames.
+
+`Fragment.prefix_policy`, `application_prefix_policy`, and `prefix_noFault`
+cover interrupted executions. `project_random_addresses` shows that projection
+preserves every addressed random read. Application accesses must be disjoint
+from the stack reservation; code, frames, and stack endpoints must fit in words.
+These are explicit theorem hypotheses, not assumptions added to the machine.
+
+For infinite executions, `LoopProgress` describes a true loop condition and a
+finite body derivation returning to an invariant, permitting terminating
+recursive calls inside each iteration. `source_loop_diverges`,
+`compiled_loop_diverges`, and `compiled_loop_stackBound` prove independent source
+divergence and an infinite target run with bounded stack. The interface is
+certificate based: it does not claim completeness of finite derivations or a
+translation of arbitrary operational divergence without a progress certificate.
+
+The theorem-based fixtures prove a nineteen-instruction return from dirty RAM
+and a genuinely infinite loop with a two-word stack. All source and compiler
+proofs pass the project axiom audit. The source logic, C-like DSL, and alternative
+perfect-hashing proofs remain subsequent milestones.

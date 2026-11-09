@@ -7,3 +7,5 @@ import RamLang.CallingConvention
 import RamLang.Compiler.Lower
 import RamLang.Compiler.Link
 import RamLang.Compiler.Examples
+import RamLang.Capacity
+import RamLang.Compiler.Proofs.Examples

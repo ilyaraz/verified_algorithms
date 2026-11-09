@@ -118,8 +118,7 @@ FILES = [Path("WordRam") / f"{m}.lean" for m in WORD_RAM_MODULES] + [
     Path("Checks.lean"),
 ]
 
-FILES += [Path("RamLang") / f"{m}.lean" for m in ["Syntax", "WellFormed", "Semantics", "Execution", "Examples", "CallingConvention",
-    "Compiler/Lower", "Compiler/Link", "Compiler/Examples"]]
+FILES += sorted(path.relative_to(ROOT) for path in (ROOT / "RamLang").rglob("*.lean"))
 
 def module_label(file):
     """Keep distinct labels for modules sharing a basename such as Specification."""

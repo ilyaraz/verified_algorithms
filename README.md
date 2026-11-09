@@ -86,8 +86,9 @@ examples and audits proof dependencies.
 
 The alternative [structured word-RAM development](docs/ramlang-contract.md)
 adds an independent recursive source language under `RamLang/`. Its milestone
-ledger distinguishes implemented semantics from the remaining compiler proofs
-and separate perfect-hashing source integration. Import `RamLang` for the
-checked core, source evaluator, deterministic recursive compiler, and examples.
-The compiler has execution fixtures and proved code sizes; its general
-correctness/resource theorem is the next milestone.
+ledger tracks the compiler, source proof interface, and separate perfect-hashing
+integration. Import `RamLang` for the checked core, source evaluator, recursive
+compiler, and proofs. Finite source derivations transfer to exact target
+instruction counts, application traces, and stack bounds, including exhaustion.
+Productive loop certificates also establish infinite target runs with bounded
+stack use. The source logic and C-like DSL are the next milestones.

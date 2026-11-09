@@ -8,6 +8,7 @@ cd "$task_root"
 # Recheck source and compiled recursion/capacity fixtures with cached artifacts.
 ./lake env lean RamLang/Examples.lean
 ./lake env lean RamLang/Compiler/Examples.lean
+./lake env lean RamLang/Compiler/Proofs/Examples.lean
 # Reexecute integration fixtures even when their compiled modules are cached.
 ./lake env lean -s 131072 DataStructures/PerfectHash/Total/Examples.lean
 scripts/check_exports.sh
